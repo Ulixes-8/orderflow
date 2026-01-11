@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "items": [
+    {"sku": "COFFEE", "name": "Fresh Brewed Coffee", "unit_price_pence": 250},
+    {"sku": "TEA", "name": "English Breakfast Tea", "unit_price_pence": 200},
+    {"sku": "SANDWICH", "name": "Ham & Cheese Sandwich", "unit_price_pence": 450},
+    {"sku": "CAKE", "name": "Slice of Cake", "unit_price_pence": 350},
+    {"sku": "JUICE", "name": "Orange Juice", "unit_price_pence": 300},
+    {"sku": "WATER", "name": "Still Water (500ml)", "unit_price_pence": 150},
+    {"sku": "SALAD", "name": "Seasonal Salad", "unit_price_pence": 500},
+    {"sku": "SOUP", "name": "Soup of the Day", "unit_price_pence": 400}
+  ]
+}
