@@ -200,7 +200,18 @@ def _build_command_parser(command: str) -> argparse.ArgumentParser:
 def _find_command_index(argv: list[str]) -> int | None:
     """Find the index of the subcommand in the argument list."""
 
+    options_with_values = {"--db", "--catalog", "--auth-code", "--log-level", "--format"}
+    skip_next = False
     for index, token in enumerate(argv):
+        if skip_next:
+            skip_next = False
+            continue
+        if token.startswith("--"):
+            if token in options_with_values:
+                skip_next = True
+                continue
+            if "=" in token:
+                continue
         if token in _COMMANDS:
             return index
     return None
