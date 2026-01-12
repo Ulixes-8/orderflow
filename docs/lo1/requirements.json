@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "project": "OrderFlow",
+  "notes": [
+    "This catalogue is intentionally diverse across requirement types and levels.",
+    "Fields support traceability and test planning: type, level, stakeholder, priority, verifiable."
+  ],
+  "requirements": [
+    {
+      "id": "R-FUNC-PLACE-01",
+      "type": "functional_correctness",
+      "level": "system",
+      "stakeholder": "customer",
+      "priority": "P0",
+      "verifiable": true,
+      "statement": "For a valid `place` command, the system shall create a PENDING order with correct items, prices, and totals.",
+      "acceptance": "CLI returns ok=true; order_id matches required format; total_pence equals Σ(qty×price); items are aggregated and canonicalised."
+    },
+    {
+      "id": "R-FUNC-LIST-01",
+      "type": "functional_correctness",
+      "level": "system",
+      "stakeholder": "operations",
+      "priority": "P0",
+      "verifiable": true,
+      "statement": "`list` shall return all outstanding PENDING orders grouped by mobile and a correct outstanding_order_count.",
+      "acceptance": "Count equals number of returned order entries; only PENDING orders appear."
+    },
+    {
+      "id": "R-FUNC-SHOW-01",
+      "type": "functional_correctness",
+      "level": "system",
+      "stakeholder": "operations",
+      "priority": "P0",
+      "verifiable": true,
+      "statement": "`show` shall return the full stored order by order_id, including status and timestamps.",
+      "acceptance": "Existing order returns ok=true and full fields; missing order returns ORDER_NOT_FOUND."
+    },
+    {
+      "id": "R-FUNC-BATCH-01",
+      "type": "functional_correctness",
+      "level": "system",
+      "stakeholder": "administrator",
+      "priority": "P1",
+      "verifiable": true,
+      "statement": "`batch` shall process mobile|message lines and emit JSON Lines results plus a final summary.",
+      "acceptance": "One result JSON per input line plus a final batch_summary with processed/succeeded/failed counts."
+    },
+
+    {
+      "id": "R-SAFE-FULFILL-01",
+      "type": "safety",
+      "level": "integration",
+      "stakeholder": "system_owner",
+      "priority": "P0",
+      "verifiable": true,
+      "statement": "Without correct auth_code, an order shall not transition to FULFILLED and no persisted state change shall occur.",
+      "acceptance": "fulfill returns UNAUTHORIZED; subsequent show confirms status remains PENDING."
+    },
+    {
+      "id": "R-SAFE-IDEMPOTENT-01",
+      "type": "safety",
+      "level": "integration",
+      "stakeholder": "operations",
+      "priority": "P1",
+      "verifiable": true,
+      "statement": "Fulfilling an already FULFILLED order shall not modify it and shall return ORDER_ALREADY_FULFILLED.",
+      "acceptance": "Second fulfill returns ORDER_ALREADY_FULFILLED; fulfilled_at_utc unchanged."
+    },
+    {
+      "id": "R-LIVE-CLI-01",
+      "type": "liveness",
+      "level": "system",
+      "stakeholder": "customer",
+      "priority": "P1",
+      "verifiable": true,
+      "statement": "For any finite CLI invocation with finite input, OrderFlow shall return a response and exit (no hang).",
+      "acceptance": "Process terminates under a test harness timeout; exit codes are documented and stable."
+    },
+
+    {
+      "id": "R-ROBUST-MOBILE-01",
+      "type": "robustness",
+      "level": "unit",
+      "stakeholder": "system_owner",
+      "priority": "P0",
+      "verifiable": true,
+      "statement": "Invalid mobiles (non E.164 + plus) shall be rejected with INVALID_MOBILE and cause no side effects.",
+      "acceptance": "place returns ok=false, code=INVALID_MOBILE, exit=2; no DB rows created."
+    },
+    {
+      "id": "R-ROBUST-MSG-01",
+      "type": "robustness",
+      "level": "unit",
+      "stakeholder": "system_owner",
+      "priority": "P0",
+      "verifiable": true,
+      "statement": "Messages exceeding max length shall be rejected with MESSAGE_TOO_LONG.",
+      "acceptance": "place returns ok=false code=MESSAGE_TOO_LONG; no DB rows created."
+    },
+    {
+      "id": "R-ROBUST-PARSER-01",
+      "type": "robustness",
+      "level": "unit",
+      "stakeholder": "developer",
+      "priority": "P0",
+      "verifiable": true,
+      "statement": "Parser shall enforce grammar and limits (must start ORDER, ≥1 item token, max items, qty in range, token format).",
+      "acceptance": "parse errors yield PARSE_ERROR / TOO_MANY_ITEMS / INVALID_QUANTITY as appropriate."
+    },
+    {
+      "id": "R-SEC-INJECTION-01",
+      "type": "security",
+      "level": "integration",
+      "stakeholder": "system_owner",
+      "priority": "P1",
+      "verifiable": true,
+      "statement": "OrderFlow persistence shall not be vulnerable to SQL injection via message/SKU/mobile fields.",
+      "acceptance": "Repository uses parameterised statements; tests show malicious strings do not alter schema/data."
+    },
+    {
+      "id": "R-ROBUST-DBFAIL-01",
+      "type": "robustness",
+      "level": "integration",
+      "stakeholder": "administrator",
+      "priority": "P1",
+      "verifiable": true,
+      "statement": "On database errors, the system shall return DATABASE_ERROR and not partially write inconsistent state.",
+      "acceptance": "If insertion fails mid-way, no orphan rows exist; error code and exit code match contract."
+    },
+
+    {
+      "id": "R-PERF-PLACE-01",
+      "type": "performance",
+      "level": "system",
+      "stakeholder": "customer",
+      "priority": "P2",
+      "verifiable": true,
+      "statement": "Under a defined workload, `place` latency shall meet explicit targets on the reference environment.",
+      "acceptance": "Using repeated sampling: mean_total_ms <= 50ms and p95_total_ms <= 120ms for a typical order."
+    },
+    {
+      "id": "R-PERF-BATCH-01",
+      "type": "performance",
+      "level": "system",
+      "stakeholder": "administrator",
+      "priority": "P2",
+      "verifiable": true,
+      "statement": "For a batch of N valid lines, throughput shall be reported and bounded under a defined environment.",
+      "acceptance": "Benchmark script reports lines/sec and a repeatable distribution; targets defined in LO4."
+    },
+
+    {
+      "id": "R-QUAL-DETERMINISM-01",
+      "type": "qualitative",
+      "level": "system",
+      "stakeholder": "developer",
+      "priority": "P1",
+      "verifiable": true,
+      "statement": "JSON outputs shall be deterministic (stable key ordering) to support regression testing.",
+      "acceptance": "Golden-output tests do not flap; json keys are sorted and stable."
+    },
+    {
+      "id": "R-QUAL-TESTABILITY-01",
+      "type": "qualitative",
+      "level": "unit",
+      "stakeholder": "developer",
+      "priority": "P1",
+      "verifiable": true,
+      "statement": "Core logic shall be decomposed so parsing/validation/service/storage can be tested in isolation.",
+      "acceptance": "Tests can inject deterministic clocks/ID generators and in-memory repositories."
+    },
+    {
+      "id": "R-QUAL-VISIBILITY-01",
+      "type": "qualitative",
+      "level": "system",
+      "stakeholder": "administrator",
+      "priority": "P1",
+      "verifiable": true,
+      "statement": "The system shall provide operational visibility via metrics counters and timing summaries.",
+      "acceptance": "`metrics` reports counters and timing summaries; reset behaves as documented."
+    }
+  ]
+}
