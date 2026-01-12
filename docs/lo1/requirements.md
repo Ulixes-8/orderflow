@@ -27,7 +27,7 @@ This stakeholder-driven approach is explicitly suggested for LO1.
 - R-SAFE-IDEMPOTENT-01 (P1, Integration): fulfilling twice is rejected and does not modify.
 
 ## 3. Liveness (system returns to a ready state / completes)
-- R-LIVE-CLI-01 (P1, System): CLI always returns a response and exits for finite input.
+- R-LIVE-CLI-01 (P1, System): CLI always returns a response and exits for finite input (exit codes documented in `docs/cli_contract.md`).
 
 ## 4. Robustness and security (degraded but safe behavior under stress/malicious input)
 - R-ROBUST-MOBILE-01 (P0, Unit): invalid mobile rejected; no side effects.

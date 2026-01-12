@@ -75,7 +75,7 @@
       "priority": "P1",
       "verifiable": true,
       "statement": "For any finite CLI invocation with finite input, OrderFlow shall return a response and exit (no hang).",
-      "acceptance": "Process terminates under a test harness timeout; exit codes are documented and stable."
+      "acceptance": "Process terminates under a test harness timeout; exit codes are documented in docs/cli_contract.md and stable."
     },
 
     {
@@ -146,8 +146,8 @@
       "stakeholder": "administrator",
       "priority": "P2",
       "verifiable": true,
-      "statement": "For a batch of N valid lines, throughput shall be reported and bounded under a defined environment.",
-      "acceptance": "Benchmark script reports lines/sec and a repeatable distribution; targets defined in LO4."
+      "statement": "For a batch of N valid lines, throughput shall be measured and reported under a defined environment.",
+      "acceptance": "Benchmark script reports lines/sec and a repeatable distribution (e.g., mean/p95); numeric targets are set and evaluated in LO4."
     },
 
     {
