@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import logging
 import os
@@ -12,6 +13,7 @@ from typing import Iterable, Tuple
 
 from orderflow.auth import AuthService
 from orderflow.catalogue import Catalogue
+from orderflow.diagnostics import build_diagnostics_sink
 from orderflow.metrics import MetricsCollector, MetricsStore
 from orderflow.service import OrderService, RandomIdGenerator, ServiceLimits, SystemClock
 from orderflow.store.sqlite import SQLiteOrderRepository
@@ -52,6 +54,9 @@ def main() -> None:
     db_path = args.db or os.getenv("ORDERFLOW_DB_PATH", "./orderflow.db")
     required_auth_code = args.auth_code or os.getenv("ORDERFLOW_AUTH_CODE", "123456")
 
+    diagnostics_path = args.diagnostics or os.getenv("ORDERFLOW_DIAGNOSTICS_PATH")
+    diagnostics = build_diagnostics_sink(diagnostics_path)
+    atexit.register(diagnostics.close)
     _LOGGER.info("OrderFlow command invoked: %s", args.command)
     _LOGGER.info("Using database path: %s", db_path)
 
@@ -69,6 +74,7 @@ def main() -> None:
         clock=SystemClock(),
         id_generator=RandomIdGenerator(),
         metrics=metrics,
+        diagnostics=diagnostics,
         limits=ServiceLimits(),
     )
 
@@ -150,6 +156,7 @@ def _build_global_parser() -> argparse.ArgumentParser:
     parser.add_argument("--db", help="Path to the SQLite database.")
     parser.add_argument("--catalog", help="Path to the catalogue JSON file.")
     parser.add_argument("--auth-code", help="Required authorization code.")
+    parser.add_argument("--diagnostics", help="Write JSONL diagnostics to this path.")
     parser.add_argument(
         "--log-level",
         default="INFO",
@@ -200,7 +207,7 @@ def _build_command_parser(command: str) -> argparse.ArgumentParser:
 def _find_command_index(argv: list[str]) -> int | None:
     """Find the index of the subcommand in the argument list."""
 
-    options_with_values = {"--db", "--catalog", "--auth-code", "--log-level", "--format"}
+    options_with_values = {"--db", "--catalog", "--auth-code", "--log-level", "--format", "--diagnostics"}
     skip_next = False
     for index, token in enumerate(argv):
         if skip_next:

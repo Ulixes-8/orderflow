@@ -9,6 +9,7 @@ from typing import Dict, List, Protocol
 
 from orderflow.auth import AuthService
 from orderflow.catalogue import Catalogue
+from orderflow.diagnostics import DiagnosticsSink, NullDiagnosticsSink
 from orderflow.domain import Order, OrderLine, OrderStatus
 from orderflow.metrics import MetricsCollector, TimingContext
 from orderflow.parser import parse_order_message
@@ -91,6 +92,7 @@ class OrderService:
         clock: Clock,
         id_generator: IdGenerator,
         metrics: MetricsCollector,
+        diagnostics: DiagnosticsSink | None = None,
         limits: ServiceLimits | None = None,
     ) -> None:
         self._repository = repository
@@ -99,15 +101,18 @@ class OrderService:
         self._clock = clock
         self._id_generator = id_generator
         self._metrics = metrics
+        self._diagnostics = diagnostics or NullDiagnosticsSink()
         self._limits = limits or ServiceLimits()
 
     def place_order(self, mobile: str, message: str) -> Dict[str, object]:
         """Place a new order and return a response dict."""
 
         self._metrics.messages_processed_total += 1
+        self._diagnostics.record("place.start", {"mobile": mobile, "message_len": len(message.rstrip("\n"))})
         with TimingContext(self._metrics, "total_ms"):
             try:
                 canonical_mobile = validate_mobile(mobile)
+                self._diagnostics.record("place.mobile_ok", {"mobile": canonical_mobile})
                 validate_message_length(message, self._limits.max_message_len)
                 with TimingContext(self._metrics, "parse_ms"):
                     sku_quantities = parse_order_message(
@@ -115,6 +120,7 @@ class OrderService:
                         max_items=self._limits.max_items,
                         max_qty=self._limits.max_qty,
                     )
+                    self._diagnostics.record("place.parsed", {"sku_count": len(sku_quantities), "skus": sorted(sku_quantities)})
                     for sku in sku_quantities:
                         if not self._catalogue.has(sku):
                             raise ValidationError(
@@ -124,9 +130,11 @@ class OrderService:
                             )
                     items = self._build_order_lines(sku_quantities)
                 order = self._build_order(canonical_mobile, message, items)
+                self._ensure_order_invariants(order)
                 with TimingContext(self._metrics, "store_ms"):
                     order = self._create_order_with_retry(order)
                 self._metrics.orders_created_total += 1
+                self._diagnostics.record("place.stored", {"order_id": order.order_id, "total_pence": order.total_pence})
                 return {
                     "ok": True,
                     "command": "place",
@@ -337,11 +345,47 @@ class OrderService:
                 )
         raise OrderAlreadyExistsError("Failed to generate unique order ID.") from last_error
 
+    def _ensure_order_invariants(self, order: Order) -> None:
+        """Check internal consistency invariants for constructed orders.
+
+        These checks strengthen test oracles by turning internal inconsistencies
+        into observable INTERNAL_ERROR outcomes.
+        """
+        if order.status != OrderStatus.PENDING:
+            raise ValidationError(
+                INTERNAL_ERROR,
+                "Invariant violated: placed order must be PENDING.",
+                details={"status": order.status.value},
+            )
+        computed_total = sum(line.line_total_pence for line in order.items)
+        if computed_total != order.total_pence:
+            raise ValidationError(
+                INTERNAL_ERROR,
+                "Invariant violated: total_pence mismatch.",
+                details={"computed_total": computed_total, "total_pence": order.total_pence},
+            )
+        for line in order.items:
+            if line.qty < 1:
+                raise ValidationError(
+                    INTERNAL_ERROR,
+                    "Invariant violated: qty must be positive.",
+                    details={"sku": line.sku, "qty": line.qty},
+                )
+            expected_line_total = line.qty * line.unit_price_pence
+            if expected_line_total != line.line_total_pence:
+                raise ValidationError(
+                    INTERNAL_ERROR,
+                    "Invariant violated: line_total mismatch.",
+                    details={"sku": line.sku, "expected": expected_line_total, "actual": line.line_total_pence},
+                )
+
+
     def _error_response(self, command: str, exc: ValidationError) -> Dict[str, object]:
         """Build a standard error response and update metrics."""
 
         self._metrics.orders_rejected_total += 1
         self._metrics.increment_error(exc.code)
+        self._diagnostics.record("error", {"command": command, "code": exc.code, "message": exc.message, "details": exc.details or {}})
         error_payload: Dict[str, object] = {
             "code": exc.code,
             "message": exc.message,

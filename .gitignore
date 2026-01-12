@@ -13,3 +13,5 @@ venv/
 htmlcov/
 orderflow.db
 *.db
+*.sh
+*.bak.*

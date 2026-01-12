@@ -1,0 +1,25 @@
+test_id,level,primary_technique,linked_requirements,short_description
+T-SYS-PLACE-001,system,CLI contract,"R-FUNC-PLACE-01",End-to-end place returns ok and correct payload/exit code
+T-INT-PLACE-001,integration,DB boundary,"R-FUNC-PLACE-01",Service+repo create persists correct order state
+T-UNIT-PARSER-001,unit,EP/BVA,"R-ROBUST-PARSER-01",Parser accepts representative valid partitions
+T-UNIT-VALID-001,unit,EP/BVA,"R-ROBUST-MOBILE-01;R-ROBUST-MSG-01",Mobile/message validation boundaries
+T-SYS-LIST-001,system,CLI contract,"R-FUNC-LIST-01",List returns outstanding orders and correct count
+T-INT-LIST-001,integration,DB query semantics,"R-FUNC-LIST-01",Repo groups pending orders by mobile
+T-SYS-SHOW-001,system,CLI contract,"R-FUNC-SHOW-01",Show returns order or ORDER_NOT_FOUND
+T-INT-SHOW-001,integration,DB boundary,"R-FUNC-SHOW-01",Repo retrieves stored order deterministically
+T-SYS-BATCH-001,system,streaming output,"R-FUNC-BATCH-01",Batch emits per-line JSON and summary
+T-SYS-BATCH-002,system,error partitions,"R-FUNC-BATCH-01",Batch malformed lines produce correct error payload
+T-INT-FULFILL-001,integration,state invariant,"R-SAFE-FULFILL-01",Wrong auth causes no persisted transition
+T-SYS-FULFILL-001,system,CLI contract,"R-SAFE-FULFILL-01",Fulfill returns UNAUTHORIZED exit code on bad auth
+T-INT-FULFILL-002,integration,idempotence,"R-SAFE-IDEMPOTENT-01",Second fulfill rejected and no state change
+T-SYS-LIVE-001,system,timeout harness,"R-LIVE-CLI-01",CLI returns within bounded time for finite input
+T-UNIT-PARSER-002,unit,negative tests,"R-ROBUST-PARSER-01",Grammar violations rejected with correct codes
+T-UNIT-PARSER-003,unit,boundary tests,"R-ROBUST-PARSER-01",Max items/max qty/aggregation overflow boundaries
+T-INT-SEC-001,integration,malicious strings,"R-SEC-INJECTION-01",SQL injection-style inputs do not alter DB/schema
+T-REVIEW-SEC-001,review,inspection,"R-SEC-INJECTION-01",Review evidence: parameterized SQL usage
+T-INT-DB-FAIL-001,integration,fault injection,"R-ROBUST-DBFAIL-01",Simulated DB errors produce DATABASE_ERROR with no partial writes
+T-PERF-PLACE-001,system,repeated sampling,"R-PERF-PLACE-01",Measure mean/p95 for place under defined workload
+T-PERF-BATCH-001,system,throughput sampling,"R-PERF-BATCH-01",Measure lines/sec and distribution
+T-SYS-OUTPUT-001,system,golden output,"R-QUAL-DETERMINISM-01",Stdout JSON is deterministic (stable key ordering)
+T-REVIEW-ARCH-001,review,inspection,"R-QUAL-TESTABILITY-01",Design evidence: seams enable isolation/determinism
+T-SYS-METRICS-001,system,contract test,"R-QUAL-VISIBILITY-01",Metrics output schema and reset semantics

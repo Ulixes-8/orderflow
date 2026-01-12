@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from orderflow.auth import AuthService
 from orderflow.catalogue import Catalogue
+from orderflow.diagnostics import DiagnosticsSink
 from orderflow.metrics import MetricsCollector
 from orderflow.service import (
     Clock,
@@ -41,7 +42,9 @@ class SequentialIdGenerator:
 
 
 def make_test_service(
-    catalogue_path: str | None = None, auth_code: str = "123456"
+    catalogue_path: str | None = None,
+    auth_code: str = "123456",
+    diagnostics: DiagnosticsSink | None = None,
 ) -> OrderService:
     """Create a test OrderService with in-memory dependencies."""
 
@@ -60,5 +63,6 @@ def make_test_service(
         clock=clock,
         id_generator=id_generator,
         metrics=metrics,
+        diagnostics=diagnostics,
         limits=limits,
     )
