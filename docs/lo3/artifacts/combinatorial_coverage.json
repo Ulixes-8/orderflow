@@ -1,0 +1,38 @@
+{
+  "category_coverage": {
+    "auth_class": {
+      "covered": 2,
+      "percent": 100.0,
+      "total": 2
+    },
+    "message_class": {
+      "covered": 6,
+      "percent": 100.0,
+      "total": 6
+    },
+    "mobile_class": {
+      "covered": 5,
+      "percent": 100.0,
+      "total": 5
+    }
+  },
+  "generated_at": "2026-01-13T11:37:31+00:00",
+  "num_cases": 60,
+  "pairwise_coverage": {
+    "message_class:auth_class": {
+      "covered": 12,
+      "percent": 100.0,
+      "total": 12
+    },
+    "mobile_class:auth_class": {
+      "covered": 10,
+      "percent": 100.0,
+      "total": 10
+    },
+    "mobile_class:message_class": {
+      "covered": 30,
+      "percent": 100.0,
+      "total": 30
+    }
+  }
+}

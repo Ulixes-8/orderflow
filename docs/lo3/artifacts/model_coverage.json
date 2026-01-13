@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-01-13T11:37:30+00:00",
+  "state_coverage": {
+    "percent": 100.0,
+    "total": 3,
+    "visited": 3
+  },
+  "states_defined": [
+    "S0",
+    "S1",
+    "S2"
+  ],
+  "states_visited": [
+    "S0",
+    "S1",
+    "S2"
+  ],
+  "transition_coverage": {
+    "percent": 100.0,
+    "total": 7,
+    "visited": 7
+  },
+  "transitions_defined": [
+    "place:S0->S1",
+    "show:S1->S1",
+    "list:S1->S1",
+    "fulfill_auth_ok:S1->S2",
+    "fulfill_auth_bad:S1->S1",
+    "fulfill_on_fulfilled:S2->S2",
+    "show_missing:S0->S0"
+  ],
+  "transitions_visited": [
+    "fulfill_auth_bad:S1->S1",
+    "fulfill_auth_ok:S1->S2",
+    "fulfill_on_fulfilled:S2->S2",
+    "list:S1->S1",
+    "place:S0->S1",
+    "show:S1->S1",
+    "show_missing:S0->S0"
+  ]
+}
