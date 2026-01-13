@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import shutil
@@ -170,17 +171,38 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
-    """Register dummy coverage options to avoid pytest-cov dependency."""
+    """Register fallback coverage options only when they are not already present.
+
+    The LO3 runner always passes --cov/--cov-branch/--cov-report. If pytest-cov
+    is installed, it registers these options first. We must not crash if they
+    already exist. If pytest-cov is absent, these no-op options prevent pytest
+    from failing on unknown arguments.
+    """
 
     group = parser.getgroup("coverage")
-    group.addoption("--cov", action="append", default=[], help="Enable coverage (noop).")
-    group.addoption("--cov-branch", action="store_true", default=False, help="Track branch coverage (noop).")
-    group.addoption(
+
+    def _safe_addoption(*args: object, **kwargs: object) -> None:
+        """Add an option, ignoring duplicate/argparse conflicts."""
+        try:
+            group.addoption(*args, **kwargs)  # type: ignore[arg-type]
+        except argparse.ArgumentError:
+            # Option already registered (e.g., by pytest-cov). Safe to ignore.
+            return
+
+    _safe_addoption("--cov", action="append", default=[], help="Enable coverage (noop).")
+    _safe_addoption(
+        "--cov-branch",
+        action="store_true",
+        default=False,
+        help="Track branch coverage (noop).",
+    )
+    _safe_addoption(
         "--cov-report",
         action="append",
         default=[],
         help="Coverage report type (xml:/path, html:/path, term-missing).",
     )
+
 
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
@@ -191,13 +213,13 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     if collector is not None:
         collector.write_artifacts(repo_root)
 
-    # Only emit dummy coverage if pytest-cov is NOT active. When pytest-cov is
-    # active, it should generate real coverage.xml/coverage_html, and we must
-    # never overwrite it.
-    pluginmanager = session.config.pluginmanager
-    pytest_cov_active = pluginmanager.hasplugin("pytest_cov") or pluginmanager.hasplugin("cov")
+    # If pytest-cov is active, it will generate real coverage outputs.
+    # Dummy coverage must never overwrite real reports.
+    pm = session.config.pluginmanager
+    pytest_cov_active = pm.hasplugin("pytest_cov") or pm.hasplugin("cov")
     if not pytest_cov_active:
         _write_dummy_coverage(session, repo_root)
+
 
 
 def _write_dummy_coverage(session: pytest.Session, repo_root: Path) -> None:
@@ -216,20 +238,21 @@ def _write_dummy_coverage(session: pytest.Session, repo_root: Path) -> None:
             html_path = Path(report.split(":", 1)[1])
 
     if xml_path is not None:
-        # Do not overwrite real coverage output if it already exists.
+        # Do not overwrite an existing real report.
         if not xml_path.exists() or xml_path.stat().st_size == 0:
             xml_path.parent.mkdir(parents=True, exist_ok=True)
             xml_path.write_text(_minimal_cobertura(), encoding="utf-8")
 
     if html_path is not None:
         index_path = html_path / "index.html"
-        # Do not overwrite real coverage HTML output if it already exists.
+        # Do not overwrite an existing real report.
         if not index_path.exists() or index_path.stat().st_size == 0:
             html_path.mkdir(parents=True, exist_ok=True)
             index_path.write_text(
                 "<html><body><h1>Coverage Report</h1><p>Dummy coverage.</p></body></html>",
                 encoding="utf-8",
             )
+
 
 
 def _minimal_cobertura() -> str:
