@@ -1,0 +1,178 @@
+{
+  "combinatorial": {
+    "cases_path": "docs/lo3/artifacts/combinatorial_cases.json"
+  },
+  "counts": {
+    "tests_fail": 0,
+    "tests_pass": 29,
+    "tests_skip": 1,
+    "tests_total": 30,
+    "tests_xfail": 0
+  },
+  "generated_at": "2026-01-13T11:37:29+00:00",
+  "model": {
+    "coverage_path": "docs/lo3/artifacts/model_coverage.json"
+  },
+  "requirements_coverage": {
+    "per_requirement": {
+      "R-FUNC-BATCH-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-SYS-BATCH-001",
+          "T-SYS-BATCH-002"
+        ]
+      },
+      "R-FUNC-LIST-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-INT-LIST-001",
+          "T-SYS-LIST-001"
+        ]
+      },
+      "R-FUNC-PLACE-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-INT-PLACE-001",
+          "T-SYS-PLACE-001",
+          "T-UNIT-PARSER-001",
+          "T-UNIT-VALID-001"
+        ]
+      },
+      "R-FUNC-SHOW-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-INT-SHOW-001",
+          "T-SYS-SHOW-001"
+        ]
+      },
+      "R-LIVE-CLI-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-SYS-LIVE-001"
+        ]
+      },
+      "R-PERF-BATCH-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-PERF-BATCH-001"
+        ]
+      },
+      "R-PERF-PLACE-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-PERF-PLACE-001"
+        ]
+      },
+      "R-QUAL-DETERMINISM-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-SYS-OUTPUT-001"
+        ]
+      },
+      "R-QUAL-TESTABILITY-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-REVIEW-ARCH-001"
+        ]
+      },
+      "R-QUAL-VISIBILITY-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-SYS-METRICS-001"
+        ]
+      },
+      "R-ROBUST-DBFAIL-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-INT-DB-FAIL-001"
+        ]
+      },
+      "R-ROBUST-MOBILE-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-SYS-ERRCODES-001",
+          "T-UNIT-VALID-002"
+        ]
+      },
+      "R-ROBUST-MSG-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-SYS-ERRCODES-002",
+          "T-UNIT-VALID-003"
+        ]
+      },
+      "R-ROBUST-PARSER-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-UNIT-PARSER-002",
+          "T-UNIT-PARSER-003"
+        ]
+      },
+      "R-SAFE-FULFILL-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-INT-FULFILL-001",
+          "T-SYS-FULFILL-001"
+        ]
+      },
+      "R-SAFE-IDEMPOTENT-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-INT-FULFILL-002"
+        ]
+      },
+      "R-SEC-INJECTION-01": {
+        "has_passing_test": true,
+        "planned_test_ids": [
+          "T-INT-SEC-001",
+          "T-REVIEW-SEC-001"
+        ]
+      }
+    },
+    "requirements_covered": 17,
+    "requirements_covered_percent": 100.0,
+    "requirements_total": 17,
+    "uncovered_requirement_ids": []
+  },
+  "structural_coverage": {
+    "by_module": {
+      "orderflow/cli.py": {
+        "branch_rate": 0.0,
+        "line_rate": 0.0
+      },
+      "orderflow/parser.py": {
+        "branch_rate": 0.0,
+        "line_rate": 0.0
+      },
+      "orderflow/service.py": {
+        "branch_rate": 0.0,
+        "line_rate": 0.0
+      },
+      "orderflow/store/sqlite.py": {
+        "branch_rate": 0.0,
+        "line_rate": 0.0
+      },
+      "orderflow/validation.py": {
+        "branch_rate": 0.0,
+        "line_rate": 0.0
+      }
+    },
+    "overall": {
+      "branch_rate": 0.0,
+      "line_rate": 0.0
+    }
+  },
+  "yield": {
+    "error_codes_exercised": [
+      "INVALID_MOBILE",
+      "INVALID_QUANTITY",
+      "MESSAGE_TOO_LONG",
+      "ORDER_NOT_FOUND",
+      "PARSE_ERROR",
+      "TOO_MANY_ITEMS",
+      "UNAUTHORIZED",
+      "UNKNOWN_ITEM"
+    ],
+    "performance_smoke_path": "docs/lo3/artifacts/performance_smoke.json"
+  }
+}

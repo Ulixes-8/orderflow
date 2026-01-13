@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<coverage line-rate="0.0" branch-rate="0.0" version="0" timestamp="0">
+  <packages>
+    <package name="orderflow" line-rate="0.0" branch-rate="0.0">
+      <classes>
+        <class name="orderflow.cli" filename="orderflow/cli.py" line-rate="0.0" branch-rate="0.0"/>
+        <class name="orderflow.parser" filename="orderflow/parser.py" line-rate="0.0" branch-rate="0.0"/>
+        <class name="orderflow.service" filename="orderflow/service.py" line-rate="0.0" branch-rate="0.0"/>
+        <class name="orderflow.validation" filename="orderflow/validation.py" line-rate="0.0" branch-rate="0.0"/>
+        <class name="orderflow.store.sqlite" filename="orderflow/store/sqlite.py" line-rate="0.0" branch-rate="0.0"/>
+      </classes>
+    </package>
+  </packages>
+</coverage>

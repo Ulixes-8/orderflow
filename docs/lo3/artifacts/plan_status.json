@@ -1,0 +1,495 @@
+{
+  "generated_at": "2026-01-13T11:37:29+00:00",
+  "inventory_path": "/workspace/orderflow/docs/lo2/test_inventory.csv",
+  "summary": {
+    "deferred": 0,
+    "fail": 0,
+    "implemented_total": 28,
+    "pass": 28,
+    "planned_total": 28,
+    "skip": 0,
+    "xfail": 0
+  },
+  "tests": [
+    {
+      "implemented": true,
+      "level": "integration",
+      "linked_requirements": [
+        "R-ROBUST-DBFAIL-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/integration/test_repository_integration.py",
+          "function": "test_T_INT_DB_FAIL_001_database_error_no_partial_writes"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "fault injection",
+      "status": "PASS",
+      "test_id": "T-INT-DB-FAIL-001"
+    },
+    {
+      "implemented": true,
+      "level": "integration",
+      "linked_requirements": [
+        "R-SAFE-FULFILL-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/integration/test_repository_integration.py",
+          "function": "test_T_INT_FULFILL_001_wrong_auth_no_transition"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "state invariant",
+      "status": "PASS",
+      "test_id": "T-INT-FULFILL-001"
+    },
+    {
+      "implemented": true,
+      "level": "integration",
+      "linked_requirements": [
+        "R-SAFE-IDEMPOTENT-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/integration/test_repository_integration.py",
+          "function": "test_T_INT_FULFILL_002_second_fulfill_rejected"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "idempotence",
+      "status": "PASS",
+      "test_id": "T-INT-FULFILL-002"
+    },
+    {
+      "implemented": true,
+      "level": "integration",
+      "linked_requirements": [
+        "R-FUNC-LIST-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/integration/test_repository_integration.py",
+          "function": "test_T_INT_LIST_001_grouped_outstanding_orders"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "DB query semantics",
+      "status": "PASS",
+      "test_id": "T-INT-LIST-001"
+    },
+    {
+      "implemented": true,
+      "level": "integration",
+      "linked_requirements": [
+        "R-FUNC-PLACE-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/integration/test_repository_integration.py",
+          "function": "test_T_INT_PLACE_001_service_persists_order"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "DB boundary",
+      "status": "PASS",
+      "test_id": "T-INT-PLACE-001"
+    },
+    {
+      "implemented": true,
+      "level": "integration",
+      "linked_requirements": [
+        "R-SEC-INJECTION-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/integration/test_repository_integration.py",
+          "function": "test_T_INT_SEC_001_sql_injection_input_no_schema_change"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "malicious strings",
+      "status": "PASS",
+      "test_id": "T-INT-SEC-001"
+    },
+    {
+      "implemented": true,
+      "level": "integration",
+      "linked_requirements": [
+        "R-FUNC-SHOW-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/integration/test_repository_integration.py",
+          "function": "test_T_INT_SHOW_001_retrieves_stored_order"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "DB boundary",
+      "status": "PASS",
+      "test_id": "T-INT-SHOW-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-PERF-BATCH-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/performance/test_performance_smoke.py",
+          "function": "test_T_PERF_BATCH_001_batch_smoke"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "throughput sampling",
+      "status": "PASS",
+      "test_id": "T-PERF-BATCH-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-PERF-PLACE-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/performance/test_performance_smoke.py",
+          "function": "test_T_PERF_PLACE_001_place_smoke"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "repeated sampling",
+      "status": "PASS",
+      "test_id": "T-PERF-PLACE-001"
+    },
+    {
+      "implemented": true,
+      "level": "review",
+      "linked_requirements": [
+        "R-QUAL-TESTABILITY-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/review/test_review_checks.py",
+          "function": "test_T_REVIEW_ARCH_001_testability_seams_exist"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "inspection",
+      "status": "PASS",
+      "test_id": "T-REVIEW-ARCH-001"
+    },
+    {
+      "implemented": true,
+      "level": "review",
+      "linked_requirements": [
+        "R-SEC-INJECTION-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/review/test_review_checks.py",
+          "function": "test_T_REVIEW_SEC_001_sql_uses_parameters"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "inspection",
+      "status": "PASS",
+      "test_id": "T-REVIEW-SEC-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-FUNC-BATCH-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_BATCH_001_batch_emits_lines_and_summary"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "streaming output",
+      "status": "PASS",
+      "test_id": "T-SYS-BATCH-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-FUNC-BATCH-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_BATCH_002_batch_malformed_lines"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "error partitions",
+      "status": "PASS",
+      "test_id": "T-SYS-BATCH-002"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-ROBUST-MOBILE-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_ERRCODES_001_invalid_mobile_exit_2"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "CLI contract",
+      "status": "PASS",
+      "test_id": "T-SYS-ERRCODES-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-ROBUST-MSG-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_ERRCODES_002_message_too_long_exit_2"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "CLI contract",
+      "status": "PASS",
+      "test_id": "T-SYS-ERRCODES-002"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-SAFE-FULFILL-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_FULFILL_001_bad_auth_exit_3"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "CLI contract",
+      "status": "PASS",
+      "test_id": "T-SYS-FULFILL-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-FUNC-LIST-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_LIST_001_list_returns_outstanding"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "CLI contract",
+      "status": "PASS",
+      "test_id": "T-SYS-LIST-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-LIVE-CLI-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_LIVE_001_cli_returns_within_time"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "timeout harness",
+      "status": "PASS",
+      "test_id": "T-SYS-LIVE-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-QUAL-VISIBILITY-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_METRICS_001_metrics_schema_and_reset"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "contract test",
+      "status": "PASS",
+      "test_id": "T-SYS-METRICS-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-QUAL-DETERMINISM-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_OUTPUT_001_stdout_deterministic"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "golden output",
+      "status": "PASS",
+      "test_id": "T-SYS-OUTPUT-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-FUNC-PLACE-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_PLACE_001_cli_place_success"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "CLI contract",
+      "status": "PASS",
+      "test_id": "T-SYS-PLACE-001"
+    },
+    {
+      "implemented": true,
+      "level": "system",
+      "linked_requirements": [
+        "R-FUNC-SHOW-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/system/test_cli_contracts.py",
+          "function": "test_T_SYS_SHOW_001_show_returns_order_or_not_found"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "CLI contract",
+      "status": "PASS",
+      "test_id": "T-SYS-SHOW-001"
+    },
+    {
+      "implemented": true,
+      "level": "unit",
+      "linked_requirements": [
+        "R-ROBUST-PARSER-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/unit/test_parser.py",
+          "function": "test_T_UNIT_PARSER_001_accepts_valid_partitions"
+        },
+        {
+          "file": "tests/property/test_parser_properties.py",
+          "function": "test_T_UNIT_PARSER_001_valid_messages_are_parsed"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "EP/BVA",
+      "status": "PASS",
+      "test_id": "T-UNIT-PARSER-001"
+    },
+    {
+      "implemented": true,
+      "level": "unit",
+      "linked_requirements": [
+        "R-ROBUST-PARSER-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/unit/test_parser.py",
+          "function": "test_T_UNIT_PARSER_002_rejects_invalid_syntax"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "negative tests",
+      "status": "PASS",
+      "test_id": "T-UNIT-PARSER-002"
+    },
+    {
+      "implemented": true,
+      "level": "unit",
+      "linked_requirements": [
+        "R-ROBUST-PARSER-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/unit/test_parser.py",
+          "function": "test_T_UNIT_PARSER_003_enforces_boundaries"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "boundary tests",
+      "status": "PASS",
+      "test_id": "T-UNIT-PARSER-003"
+    },
+    {
+      "implemented": true,
+      "level": "unit",
+      "linked_requirements": [
+        "R-FUNC-PLACE-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/unit/test_validation.py",
+          "function": "test_T_UNIT_VALID_001_validations_accept_valid_inputs"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "EP/BVA",
+      "status": "PASS",
+      "test_id": "T-UNIT-VALID-001"
+    },
+    {
+      "implemented": true,
+      "level": "unit",
+      "linked_requirements": [
+        "R-ROBUST-MOBILE-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/unit/test_validation.py",
+          "function": "test_T_UNIT_VALID_002_mobile_boundaries"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "EP/BVA",
+      "status": "PASS",
+      "test_id": "T-UNIT-VALID-002"
+    },
+    {
+      "implemented": true,
+      "level": "unit",
+      "linked_requirements": [
+        "R-ROBUST-MSG-01"
+      ],
+      "locations": [
+        {
+          "file": "tests/unit/test_validation.py",
+          "function": "test_T_UNIT_VALID_003_message_length_boundaries"
+        }
+      ],
+      "notes": "",
+      "primary_technique": "EP/BVA",
+      "status": "PASS",
+      "test_id": "T-UNIT-VALID-003"
+    }
+  ]
+}
