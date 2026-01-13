@@ -190,7 +190,14 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     repo_root = Path(__file__).resolve().parents[1]
     if collector is not None:
         collector.write_artifacts(repo_root)
-    _write_dummy_coverage(session, repo_root)
+
+    # Only emit dummy coverage if pytest-cov is NOT active. When pytest-cov is
+    # active, it should generate real coverage.xml/coverage_html, and we must
+    # never overwrite it.
+    pluginmanager = session.config.pluginmanager
+    pytest_cov_active = pluginmanager.hasplugin("pytest_cov") or pluginmanager.hasplugin("cov")
+    if not pytest_cov_active:
+        _write_dummy_coverage(session, repo_root)
 
 
 def _write_dummy_coverage(session: pytest.Session, repo_root: Path) -> None:
@@ -209,16 +216,20 @@ def _write_dummy_coverage(session: pytest.Session, repo_root: Path) -> None:
             html_path = Path(report.split(":", 1)[1])
 
     if xml_path is not None:
-        xml_path.parent.mkdir(parents=True, exist_ok=True)
-        xml_path.write_text(_minimal_cobertura(), encoding="utf-8")
+        # Do not overwrite real coverage output if it already exists.
+        if not xml_path.exists() or xml_path.stat().st_size == 0:
+            xml_path.parent.mkdir(parents=True, exist_ok=True)
+            xml_path.write_text(_minimal_cobertura(), encoding="utf-8")
 
     if html_path is not None:
-        html_path.mkdir(parents=True, exist_ok=True)
         index_path = html_path / "index.html"
-        index_path.write_text(
-            "<html><body><h1>Coverage Report</h1><p>Dummy coverage.</p></body></html>",
-            encoding="utf-8",
-        )
+        # Do not overwrite real coverage HTML output if it already exists.
+        if not index_path.exists() or index_path.stat().st_size == 0:
+            html_path.mkdir(parents=True, exist_ok=True)
+            index_path.write_text(
+                "<html><body><h1>Coverage Report</h1><p>Dummy coverage.</p></body></html>",
+                encoding="utf-8",
+            )
 
 
 def _minimal_cobertura() -> str:
