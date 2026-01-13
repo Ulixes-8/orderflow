@@ -1,0 +1,4 @@
+# file: /home/osllab/Orderflow/.venv/bin/pytest
+# hypothesis_version: 6.150.1
+
+['.exe', '__main__']

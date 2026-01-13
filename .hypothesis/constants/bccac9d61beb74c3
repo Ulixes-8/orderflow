@@ -1,0 +1,4 @@
+# file: /home/osllab/Orderflow/src/orderflow/metrics.py
+# hypothesis_version: 6.150.1
+
+[0.0, 0.95, 1000, 'MetricsCollector', 'TimingContext', 'count', 'errors_by_code', 'errors_total', 'max_ms', 'mean_ms', 'min_ms', 'orders_created_total', 'p50_ms', 'p95_ms', 'parse_ms', 'store_ms', 'total_ms']

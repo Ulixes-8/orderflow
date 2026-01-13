@@ -1,0 +1,4 @@
+# file: /home/osllab/Orderflow/src/orderflow/validation.py
+# hypothesis_version: 6.150.1
+
+[256, 'DATABASE_ERROR', 'INTERNAL_ERROR', 'INVALID_MOBILE', 'INVALID_QUANTITY', 'MESSAGE_TOO_LONG', 'ORDER_NOT_FOUND', 'PARSE_ERROR', 'TOO_MANY_ITEMS', 'UNAUTHORIZED', 'UNKNOWN_ITEM', '^ORD-[0-9A-F]{8}$', '^\\+[1-9]\\d{7,14}$', '^\\d{6}$', 'auth_code', 'field', 'max_len', 'order_id']

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-01-13T11:37:29+00:00",
-  "inventory_path": "/workspace/orderflow/docs/lo2/test_inventory.csv",
+  "generated_at": "2026-01-13T13:57:06+00:00",
+  "inventory_path": "/home/osllab/Orderflow/docs/lo2/test_inventory.csv",
   "summary": {
     "deferred": 0,
     "fail": 0,

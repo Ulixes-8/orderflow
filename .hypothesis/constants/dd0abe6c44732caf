@@ -1,0 +1,4 @@
+# file: /home/osllab/Orderflow/src/orderflow/catalogue.py
+# hypothesis_version: 6.150.1
+
+['Catalogue', 'catalogue.json', 'data', 'items', 'name', 'sku', 'unit_price_pence', 'utf-8']

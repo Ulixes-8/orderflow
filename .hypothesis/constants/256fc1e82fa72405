@@ -1,0 +1,4 @@
+# file: /home/osllab/Orderflow/src/orderflow/service.py
+# hypothesis_version: 6.150.1
+
+[256, '%Y-%m-%dT%H:%M:%SZ', 'Database error.', 'Internal error.', 'Order ID collision.', 'Order not found.', 'actual', 'code', 'command', 'computed_total', 'created_at_utc', 'data', 'details', 'error', 'expected', 'fulfill', 'fulfilled_at_utc', 'items', 'line_total_pence', 'list', 'message', 'message_len', 'mobile', 'ok', 'order_id', 'orders', 'outstanding', 'parse_ms', 'place', 'place.mobile_ok', 'place.parsed', 'place.start', 'place.stored', 'qty', 'show', 'sku', 'sku_count', 'skus', 'status', 'store_ms', 'total_ms', 'total_pence', 'unit_price_pence']

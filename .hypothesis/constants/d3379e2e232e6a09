@@ -1,0 +1,4 @@
+# file: /home/osllab/Orderflow/src/orderflow/diagnostics.py
+# hypothesis_version: 6.150.1
+
+['a', 'event', 'payload', 'ts_utc', 'utf-8']

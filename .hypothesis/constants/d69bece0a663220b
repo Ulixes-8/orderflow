@@ -1,0 +1,4 @@
+# file: /home/osllab/Orderflow/src/orderflow/domain.py
+# hypothesis_version: 6.150.1
+
+['FULFILLED', 'PENDING']

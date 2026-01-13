@@ -4,12 +4,12 @@
   },
   "counts": {
     "tests_fail": 0,
-    "tests_pass": 29,
-    "tests_skip": 1,
+    "tests_pass": 30,
+    "tests_skip": 0,
     "tests_total": 30,
     "tests_xfail": 0
   },
-  "generated_at": "2026-01-13T11:37:29+00:00",
+  "generated_at": "2026-01-13T13:57:06+00:00",
   "model": {
     "coverage_path": "docs/lo3/artifacts/model_coverage.json"
   },
@@ -141,25 +141,25 @@
         "line_rate": 0.0
       },
       "orderflow/parser.py": {
-        "branch_rate": 0.0,
-        "line_rate": 0.0
+        "branch_rate": 0.9091,
+        "line_rate": 0.9524
       },
       "orderflow/service.py": {
-        "branch_rate": 0.0,
-        "line_rate": 0.0
+        "branch_rate": 0.5294,
+        "line_rate": 0.6703
       },
       "orderflow/store/sqlite.py": {
-        "branch_rate": 0.0,
-        "line_rate": 0.0
+        "branch_rate": 0.75,
+        "line_rate": 0.85
       },
       "orderflow/validation.py": {
-        "branch_rate": 0.0,
-        "line_rate": 0.0
+        "branch_rate": 0.75,
+        "line_rate": 0.9318
       }
     },
     "overall": {
-      "branch_rate": 0.0,
-      "line_rate": 0.0
+      "branch_rate": 0.2926,
+      "line_rate": 0.5354
     }
   },
   "yield": {

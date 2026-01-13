@@ -16,7 +16,7 @@
       "total": 5
     }
   },
-  "generated_at": "2026-01-13T11:37:31+00:00",
+  "generated_at": "2026-01-13T13:57:06+00:00",
   "num_cases": 60,
   "pairwise_coverage": {
     "message_class:auth_class": {
