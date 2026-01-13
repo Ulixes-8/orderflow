@@ -9,7 +9,7 @@
     "tests_total": 30,
     "tests_xfail": 0
   },
-  "generated_at": "2026-01-13T13:57:06+00:00",
+  "generated_at": "2026-01-13T17:06:51+00:00",
   "model": {
     "coverage_path": "docs/lo3/artifacts/model_coverage.json"
   },
@@ -104,6 +104,7 @@
       "R-ROBUST-PARSER-01": {
         "has_passing_test": true,
         "planned_test_ids": [
+          "T-UNIT-PARSER-001",
           "T-UNIT-PARSER-002",
           "T-UNIT-PARSER-003"
         ]

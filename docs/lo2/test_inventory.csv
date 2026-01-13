@@ -1,7 +1,7 @@
 test_id,level,primary_technique,linked_requirements,short_description
 T-SYS-PLACE-001,system,CLI contract,"R-FUNC-PLACE-01",End-to-end place returns ok and correct payload/exit code
 T-INT-PLACE-001,integration,DB boundary,"R-FUNC-PLACE-01",Service+repo create persists correct order state
-T-UNIT-PARSER-001,unit,EP/BVA,"R-ROBUST-PARSER-01",Parser accepts representative valid partitions
+T-UNIT-PARSER-001,unit,EP/BVA,"R-FUNC-PLACE-01;R-ROBUST-PARSER-01",Parser accepts representative valid partitions
 T-UNIT-VALID-001,unit,EP/BVA,"R-FUNC-PLACE-01",Validation/canonicalisation helpers on the place path (mobile/message/auth/order-id format)
 T-UNIT-VALID-002,unit,EP/BVA,"R-ROBUST-MOBILE-01",Mobile validation boundaries (E.164 +plus, digits-only, length)
 T-UNIT-VALID-003,unit,EP/BVA,"R-ROBUST-MSG-01",Message length boundaries (max length, off-by-one)

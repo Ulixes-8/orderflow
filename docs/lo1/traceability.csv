@@ -8,7 +8,7 @@ R-SAFE-IDEMPOTENT-01,integration,"T-INT-FULFILL-002","Already fulfilled returns 
 R-LIVE-CLI-01,system,"T-SYS-LIVE-001","Timeout-based no-hang harness"
 R-ROBUST-MOBILE-01,unit,"T-UNIT-VALID-002;T-SYS-ERRCODES-001","Format validation + system exit code/side effects"
 R-ROBUST-MSG-01,unit,"T-UNIT-VALID-003;T-SYS-ERRCODES-002","Message-length boundary tests"
-R-ROBUST-PARSER-01,unit,"T-UNIT-PARSER-002;T-UNIT-PARSER-003","Grammar/limits/aggregation overflow"
+R-ROBUST-PARSER-01,unit,"T-UNIT-PARSER-001;T-UNIT-PARSER-002;T-UNIT-PARSER-003","Validity partitions + grammar/limits/aggregation overflow"
 R-SEC-INJECTION-01,integration,"T-INT-SEC-001;T-REVIEW-SEC-001","DB-backed malicious strings + SQL inspection"
 R-ROBUST-DBFAIL-01,integration,"T-INT-DB-FAIL-001","Fault injection: DB error -> DATABASE_ERROR, no partial writes"
 R-PERF-PLACE-01,system,"T-PERF-PLACE-001","Repeated sampling; report mean/p95 (formalised in LO4)"
