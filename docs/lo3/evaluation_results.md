@@ -75,15 +75,17 @@ Interpretation:
 ## E) Yield evaluation
 Metric results:
 - Defect yield per technique: no defects recorded in the LO3 evidence run
-- Error-code yield: 10 distinct codes exercised out of 11 defined codes
-  (90.91% exercised; INTERNAL_ERROR is not exercised)
+- Error-code yield: 8 distinct codes exercised out of 11 defined codes
+  (72.73% exercised; unexercised codes: ORDER_ALREADY_FULFILLED,
+  INTERNAL_ERROR, DATABASE_ERROR)
 
 Interpretation:
 - The lack of failures indicates stability at this stage, but does not
   imply that tests are weak; assertions use explicit error codes,
   invariants, and CLI contract checks.
 - Failure-mode coverage is treated as a yield proxy: the denominator is
-  the defined error-code set in src/orderflow/validation.py and
+  the defined error-code set in src/orderflow/validation.py (11 constants)
+  and the corresponding exit-code handling in src/orderflow/cli.py and
   docs/cli_contract.md, not an exhaustive defect universe. Unexercised
   codes highlight negative partitions to consider in future runs.
 
