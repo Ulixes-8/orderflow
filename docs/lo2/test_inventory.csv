@@ -23,7 +23,7 @@ T-INT-SEC-001,integration,malicious strings,"R-SEC-INJECTION-01",SQL injection-s
 T-REVIEW-SEC-001,review,inspection,"R-SEC-INJECTION-01",Review evidence: parameterized SQL usage
 T-INT-DB-FAIL-001,integration,fault injection,"R-ROBUST-DBFAIL-01",Simulated DB errors produce DATABASE_ERROR with no partial writes
 T-PERF-PLACE-001,system,repeated sampling,"R-PERF-PLACE-01",Measure mean/p95 for place under defined workload
-T-PERF-BATCH-001,system,throughput sampling,"R-PERF-BATCH-01",Measure lines/sec and distribution
+T-PERF-BATCH-001,system,throughput sampling,"R-PERF-BATCH-01",Measure lines/sec derived from elapsed time for a fixed 2-line batch
 T-SYS-OUTPUT-001,system,golden output,"R-QUAL-DETERMINISM-01",Stdout JSON is deterministic (stable key ordering)
 T-REVIEW-ARCH-001,review,inspection,"R-QUAL-TESTABILITY-01",Design evidence: seams enable isolation/determinism
 T-SYS-METRICS-001,system,contract test,"R-QUAL-VISIBILITY-01",Metrics output schema and reset semantics
