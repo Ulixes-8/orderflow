@@ -55,6 +55,11 @@ Baseline performance evidence (smoke):
 - Batch throughput (derived, 2-line batch):
   - Formula: lines/sec = 2 / (ms / 1000) = 2000 / ms
   - Mean/p95 throughput: 36.099 / 37.141 lines/sec
+  - Derivation note: throughput is derived per-sample from
+    docs/lo3/artifacts/performance_smoke.json. For each latency sample
+    ms_i, throughput_i = 2 / (ms_i / 1000) = 2000 / ms_i lines/sec (fixed
+    2-line batch). Mean/p95 throughput are computed over the derived
+    throughput_i sample set (not from the inverse of mean/p95 latency).
 
 Formal statistical characterization and target evaluation are in LO4.
 

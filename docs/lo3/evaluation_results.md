@@ -98,3 +98,8 @@ Derived throughput (batch):
 - Batch size is fixed at 2 lines in the smoke sample.
 - Formula: lines/sec = 2 / (ms / 1000) = 2000 / ms
 - Mean/p95 throughput: 36.099 / 37.141 lines/sec
+  Source samples_ms are taken from docs/lo3/artifacts/performance_smoke.json.
+  Throughput is computed per-sample as 2000 / ms_i for each latency
+  measurement (fixed 2-line batch), and mean/p95 throughput are computed
+  over the derived throughput samples (not from the inverse of mean/p95
+  latency).
