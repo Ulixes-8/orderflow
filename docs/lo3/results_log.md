@@ -13,30 +13,14 @@ Format:
 
 ## Log entries
 
-### <YYYY-MM-DD HH:MM>
+### 2026-01-13 17:06 (UTC)
 Commands:
-- <command>
+- bash scripts/run_lo3_evidence.sh
 
 Outcome:
-- <summary>
-
-Defects:
-- D-001: <defect title and short description> (found by <technique>)
-
-Fix:
-- <commit hash or reference>
-
-Rerun:
-- <summary>
-
----
-
-### <YYYY-MM-DD HH:MM>
-Commands:
-- <command>
-
-Outcome:
-- <summary>
+- 30 total tests executed, 30 PASS, 0 FAIL/SKIP/XFAIL.
+- Plan status: 28 planned tests, 28 implemented, 28 PASS.
+- Coverage, model, combinatorial, error-code, and performance artifacts generated.
 
 Defects:
 - None
@@ -45,5 +29,4 @@ Fix:
 - N/A
 
 Rerun:
-- <summary>
-
+- N/A

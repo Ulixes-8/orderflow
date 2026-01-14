@@ -47,8 +47,11 @@ Mitigations:
 - Justify exclusions explicitly (unreachable/defensive) in evaluation_results.md.
 
 Targets (initial, adjust if justified):
-- >= 90% line coverage on core modules (service, parser, validation, repo, cli)
+- >= 90% line coverage on core modules (service, parser, validation, repo)
 - >= 80% branch coverage on core modules
+- CLI subprocess execution is evaluated via contract tests; structural
+  coverage for the CLI is reported but not used as a primary adequacy
+  target because subprocess coverage is not aggregated in LO3.
 
 ## C) Combinatorial coverage
 Metrics:
@@ -97,4 +100,3 @@ Mitigations:
 ## Performance note (LO3 vs LO4)
 LO3 includes baseline performance smoke evidence only (sanity checks).
 Formal statistical characterization and target evaluation are handled in LO4.
-

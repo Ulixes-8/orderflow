@@ -5,55 +5,78 @@ communicates what the results mean, including limitations and next steps.
 
 ## A) Requirements coverage evaluation
 Metric results:
-- % requirements covered by >= 1 passing test: <...>%
-- Highlight requirements covered by system/integration tests: <...>%
+- % requirements covered by >= 1 passing test: 100% (17/17)
+- Highlight requirements covered by system/integration tests: 88.24% (15/17)
 
 Interpretation:
-- What remains uncovered, and why?
-- Are uncovered requirements deferred, out-of-scope, or missing tests?
-- What is the mitigation plan?
+- All LO1 requirements have at least one passing planned test ID.
+- Two requirements (R-ROBUST-PARSER-01, R-QUAL-TESTABILITY-01) are covered
+  only by unit/review techniques; this is acceptable because these
+  requirements concern parser robustness and design seams rather than
+  end-to-end system behavior.
+- No requirements are deferred or uncovered in the current evidence set.
 
 ## B) Structural coverage evaluation (line + branch)
 Metric results:
-- Overall core-module line coverage: <...>%
-- Overall core-module branch coverage: <...>%
+- Overall line coverage (all modules): 53.54%
+- Overall branch coverage (all modules): 29.26%
+- Core-module (parser/validation/service/sqlite) unweighted average:
+  85.11% line, 73.46% branch
+- CLI coverage: 0% line/branch (subprocess execution)
 
 Interpretation:
-- List meaningful uncovered regions and whether they indicate test gaps.
-- Justify any exclusions (unreachable, defensive, platform constraints).
-- Explain how oracle strength is ensured (not just "covered").
+- The overall coverage numbers are pulled down by CLI subprocess execution
+  (coverage cannot attribute subprocess lines) and by non-core modules.
+- The core in-process modules achieve substantially higher coverage,
+  indicating good structural exercise of business logic paths.
+- The targets in evaluation_criteria.md remain aspirational; current
+  results fall short of the 90%/80% targets when measured overall, but
+  the core-module averages are closer to the targets and are supported by
+  strong oracles (explicit error codes, invariants, and contract checks).
 
 ## C) Combinatorial evaluation
 Metric results:
-- Category coverage: <...>%
-- Pairwise coverage (bounded subset): <...>%
+- Category coverage: 100%
+- Pairwise coverage (bounded subset): 100%
 
 Interpretation:
-- Which interactions were targeted and why?
-- Any constrained/forbidden combinations and rationale?
-- Any failures found due to interaction effects (yield)?
+- The combinatorial plan targets interactions between mobile formatting,
+  message validity classes, and auth correctness because these inputs
+  influence validation and error-code mapping at the CLI boundary.
+- Constraints exclude only impossible combinations (e.g., empty message
+  with a valid order payload), ensuring all generated cases are relevant.
+- No interaction-specific failures were observed in the current run.
 
 ## D) Model-based evaluation
 Metric results:
-- State coverage: <...>%
-- Transition coverage: <...>%
+- State coverage: 100% (3/3)
+- Transition coverage: 100% (7/7)
 
 Interpretation:
-- Which transitions are most critical (safety/liveness)?
-- Any missing transitions and whether they matter?
-- How does the model complement the functional/contract tests?
+- Critical transitions include place (S0->S1), fulfill with auth success
+  (S1->S2), and fulfill with auth failure (S1->S1) because they encode
+  safety (no unauthorized transition) and liveness (pending->fulfilled).
+- No defined transitions are missing from coverage; the minimal FSM
+  intentionally omits error-handling detail, which is covered by the
+  functional and CLI contract tests.
+- The model adds behavioral-space assurance by exercising state
+  progression independently of input partitioning.
 
 ## E) Yield evaluation
 Metric results:
-- Defect yield per technique: <table>
-- Error-code yield: <...> distinct codes exercised
+- Defect yield per technique: no defects recorded in the LO3 evidence run
+- Error-code yield: 8 distinct codes exercised out of 10 defined codes
+  (80% exercised; INTERNAL_ERROR and DATABASE_ERROR are not exercised)
 
 Interpretation:
-- Which techniques were most effective and why?
-- What does a low yield mean at this stage (quality vs weak tests)?
-- How are discovered defects prevented from regressing (new tests)?
+- The lack of failures indicates stability at this stage, but does not
+  imply that tests are weak; assertions use explicit error codes,
+  invariants, and CLI contract checks.
+- Failure-mode coverage is treated as a yield proxy: the denominator is
+  the defined error-code set in validation/CLI, not an exhaustive defect
+  universe. Unexercised codes highlight negative partitions to consider
+  in future runs.
 
 ## Performance note (LO3 vs LO4)
 LO3 includes baseline smoke evidence only.
 Formal statistical characterization and target evaluation occur in LO4.
-

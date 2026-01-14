@@ -3,54 +3,55 @@
 This section gives a concise overview of test results and points to detailed artifacts.
 
 ## A) Test execution summary (fill from artifacts/junit.xml)
-- Total tests executed: <N_TOTAL>
-- Passing: <N_PASS>
-- Failing: <N_FAIL>
-- Skipped: <N_SKIP>
-- Expected failures (XFAIL): <N_XFAIL>
+- Total tests executed: 30
+- Passing: 30
+- Failing: 0
+- Skipped: 0
+- Expected failures (XFAIL): 0
 
 Breakdown by level:
-- Unit: <N_UNIT>
-- Integration: <N_INT>
-- System: <N_SYS>
-- Property-based: <N_PROP>
-- Model-based: <N_MODEL>
-- Combinatorial: <N_COMBO>
+- Unit: 6
+- Integration: 7
+- System: 11
+- Review: 2
+- Performance: 2
+- Property-based: 1
+- Model-based: 0 (model coverage is reported via artifacts/model_coverage.json)
+- Combinatorial: 1
 
 ## B) Coverage summary (fill from artifacts/coverage.xml)
 Core modules (line %, branch %):
-- orderflow/service.py: <LINE>% line, <BRANCH>% branch
-- orderflow/parser.py:  <LINE>% line, <BRANCH>% branch
-- orderflow/validation.py: <LINE>% line, <BRANCH>% branch
-- orderflow/store/sqlite.py: <LINE>% line, <BRANCH>% branch
-- orderflow/cli.py: <LINE>% line, <BRANCH>% branch
+- orderflow/service.py: 67.03% line, 52.94% branch
+- orderflow/parser.py:  95.24% line, 90.91% branch
+- orderflow/validation.py: 93.18% line, 75.00% branch
+- orderflow/store/sqlite.py: 85.00% line, 75.00% branch
+- orderflow/cli.py: 0.00% line, 0.00% branch
 
 Reports:
 - HTML: docs/lo3/artifacts/coverage_html/index.html
 - XML: docs/lo3/artifacts/coverage.xml
 
 ## C) Technique coverage (brief)
-- Functional EP/BVA + negative testing: Y/N
-- Integration boundary + invariants: Y/N
-- System CLI contract tests (exit codes + stdout schema): Y/N
-- Structural coverage computed: Y/N
-- Combinatorial testing (category + bounded pairwise): Y/N
-- Model-based testing (FSM state/transition coverage): Y/N
-- Property-based testing (Hypothesis): Y/N
+- Functional EP/BVA + negative testing: Y
+- Integration boundary + invariants: Y
+- System CLI contract tests (exit codes + stdout schema): Y
+- Structural coverage computed: Y
+- Combinatorial testing (category + bounded pairwise): Y
+- Model-based testing (FSM state/transition coverage): Y
+- Property-based testing (Hypothesis): Y
 
 ## D) Yield (defects and failures)
 Defects found (unique, with references):
-- D-001: <title> (found by <technique>) -> fix: <commit/ref>
-- D-002: ...
+- None recorded in the LO3 evidence run.
 
 Failure yield trend (from results_log.md):
-- Early runs: <...>
-- Later runs: <...>
+- Early runs: no failures recorded.
+- Later runs: no failures recorded.
 
 ## E) Performance (baseline only in LO3)
 Baseline performance evidence (smoke):
-- Place mean/p95 (sample): <...>
-- Batch throughput (sample): <...>
+- Place mean/p95 (sample): 51.605ms / 56.589ms
+- Batch mean/p95 (sample): 55.446ms / 57.532ms
 
 Formal statistical characterization and target evaluation are in LO4.
 
@@ -59,4 +60,3 @@ Formal statistical characterization and target evaluation are in LO4.
 - Detailed run log: docs/lo3/results_log.md
 - Evaluation interpretation: docs/lo3/evaluation_results.md
 - Generated artifacts: docs/lo3/artifacts/
-
