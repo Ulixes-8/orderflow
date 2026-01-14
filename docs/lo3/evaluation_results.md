@@ -75,9 +75,8 @@ Interpretation:
 ## E) Yield evaluation
 Metric results:
 - Defect yield per technique: no defects recorded in the LO3 evidence run
-- Error-code yield: 8 distinct codes exercised out of 11 defined codes
-  (72.73% exercised; ORDER_ALREADY_FULFILLED, INTERNAL_ERROR, and
-  DATABASE_ERROR are not exercised)
+- Error-code yield: 10 distinct codes exercised out of 11 defined codes
+  (90.91% exercised; INTERNAL_ERROR is not exercised)
 
 Interpretation:
 - The lack of failures indicates stability at this stage, but does not
