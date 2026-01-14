@@ -41,11 +41,12 @@ def test_T_PERF_PLACE_001_place_smoke(artifact_collector, tmp_path: Path) -> Non
 
 @pytest.mark.performance
 def test_T_PERF_BATCH_001_batch_smoke(artifact_collector, tmp_path: Path) -> None:
-    """T-PERF-BATCH-001: measure batch throughput samples."""
+    """T-PERF-BATCH-001: record batch latency for derived throughput."""
 
     db_path = tmp_path / "orders.db"
     env = _base_env(db_path)
     batch_file = tmp_path / "batch.txt"
+    # Fixed 2-line batch for stable latency-to-throughput derivation.
     batch_file.write_text(
         "+15551234567|ORDER COFFEE=1\n+15557654321|ORDER TEA=1\n",
         encoding="utf-8",

@@ -60,7 +60,8 @@ input are held to a higher bar than orchestration layers.
 Metrics:
 - Category coverage: each category value exercised at least once
 - Pairwise coverage % within a bounded subset of categories, even when
-  the full cross-product is enumerated for small, bounded sets
+  the full cross-product is enumerated for small, bounded sets (LO3
+  enumerates mobile_class × message_class × auth_class)
 
 Assumptions / pitfalls:
 - Pairwise does not guarantee higher-order interaction coverage.

@@ -2,7 +2,7 @@
 
 This section gives a concise overview of test results and points to detailed artifacts.
 
-## A) Test execution summary (fill from artifacts/junit.xml)
+## A) Test execution summary
 - Total tests executed: 30
 - Passing: 30
 - Failing: 0
@@ -19,7 +19,7 @@ Breakdown by level:
 - Model-based: 0 (model coverage is reported via artifacts/model_coverage.json)
 - Combinatorial: 1
 
-## B) Coverage summary (fill from artifacts/coverage.xml)
+## B) Coverage summary
 Core modules (line %, branch %):
 - orderflow/service.py: 67.03% line, 52.94% branch
 - orderflow/parser.py:  95.24% line, 90.91% branch
@@ -52,6 +52,9 @@ Failure yield trend (from results_log.md):
 Baseline performance evidence (smoke):
 - Place mean/p95 (sample): 51.605ms / 56.589ms
 - Batch mean/p95 (sample): 55.446ms / 57.532ms
+- Batch throughput (derived, 2-line batch):
+  - Formula: lines/sec = 2 / (ms / 1000) = 2000 / ms
+  - Mean/p95 throughput: 36.099 / 37.141 lines/sec
 
 Formal statistical characterization and target evaluation are in LO4.
 

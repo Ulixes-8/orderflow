@@ -9,7 +9,7 @@ Evidence:
 - artifacts/plan_status.json is the mechanically generated summary.
 - artifacts/junit.xml provides execution status evidence.
 
-## Summary (fill after running evidence)
+## Summary
 
 - Planned tests (from LO2 inventory): 28
 - Implemented tests discovered: 28
@@ -19,8 +19,6 @@ Evidence:
 - Deferred: 0
 
 ## Table: planned vs implemented
-
-Fill this table from artifacts/plan_status.json (or auto-generated report).
 
 Columns:
 - Planned Test ID: from docs/lo2/test_inventory.csv

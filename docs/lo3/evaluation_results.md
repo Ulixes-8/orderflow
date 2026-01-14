@@ -51,8 +51,9 @@ Interpretation:
   message validity classes, and auth correctness because these inputs
   influence validation and error-code mapping at the CLI boundary.
 - The generated set enumerates the full cross-product of the bounded
-  categories (60 cases), and pairwise coverage is reported as the
-  adequacy metric for interaction coverage.
+  subset (mobile_class × message_class × auth_class, 60 cases), and
+  pairwise coverage is reported as the adequacy metric for interaction
+  coverage.
 - Constraints exclude only impossible combinations (e.g., empty message
   with a valid order payload), ensuring all generated cases are relevant.
 - No interaction-specific failures were observed in the current run.
@@ -92,3 +93,8 @@ Interpretation:
 ## Performance note (LO3 vs LO4)
 LO3 includes baseline smoke evidence only.
 Formal statistical characterization and target evaluation occur in LO4.
+
+Derived throughput (batch):
+- Batch size is fixed at 2 lines in the smoke sample.
+- Formula: lines/sec = 2 / (ms / 1000) = 2000 / ms
+- Mean/p95 throughput: 36.099 / 37.141 lines/sec
