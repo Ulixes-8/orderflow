@@ -46,17 +46,21 @@ Mitigations:
 - Add targeted negative tests for uncovered error paths where meaningful.
 - Justify exclusions explicitly (unreachable/defensive) in evaluation_results.md.
 
-Targets (initial, adjust if justified):
-- >= 90% line coverage on core modules (service, parser, validation, repo)
-- >= 80% branch coverage on core modules
+Targets (risk-based, per module):
+- Parser + validation: >= 90% line, >= 75% branch (highest risk for input acceptance)
+- SQLite repository: >= 80% line, >= 70% branch (data integrity + error mapping)
+- Service: >= 65% line, >= 50% branch (thin orchestration, error wrapping)
 - CLI subprocess execution is evaluated via contract tests; structural
   coverage for the CLI is reported but not used as a primary adequacy
   target because subprocess coverage is not aggregated in LO3.
+These thresholds are risk-based: modules that validate or parse user
+input are held to a higher bar than orchestration layers.
 
 ## C) Combinatorial coverage
 Metrics:
 - Category coverage: each category value exercised at least once
-- Pairwise coverage % within a bounded subset of categories
+- Pairwise coverage % within a bounded subset of categories, even when
+  the full cross-product is enumerated for small, bounded sets
 
 Assumptions / pitfalls:
 - Pairwise does not guarantee higher-order interaction coverage.

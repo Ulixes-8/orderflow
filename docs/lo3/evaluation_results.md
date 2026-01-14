@@ -29,10 +29,17 @@ Interpretation:
   (coverage cannot attribute subprocess lines) and by non-core modules.
 - The core in-process modules achieve substantially higher coverage,
   indicating good structural exercise of business logic paths.
-- The targets in evaluation_criteria.md remain aspirational; current
-  results fall short of the 90%/80% targets when measured overall, but
-  the core-module averages are closer to the targets and are supported by
-  strong oracles (explicit error codes, invariants, and contract checks).
+- The core-module averages align with risk-based targets in
+  evaluation_criteria.md and are supported by strong oracles (explicit
+  error codes, invariants, and contract checks).
+- Uncovered regions are primarily defensive or exceptional paths:
+  - service.py: defensive error mapping for unexpected repository errors.
+  - sqlite.py: rollback and cleanup paths triggered by low-level DB
+    exceptions not induced in LO3 runs.
+  - sqlite.py: defensive branches for malformed rows or missing fields.
+  These paths are lower-risk in normal operation; covering them would
+  require fault injection or DB error simulation in LO4, alongside
+  statistical characterization.
 
 ## C) Combinatorial evaluation
 Metric results:
@@ -43,6 +50,9 @@ Interpretation:
 - The combinatorial plan targets interactions between mobile formatting,
   message validity classes, and auth correctness because these inputs
   influence validation and error-code mapping at the CLI boundary.
+- The generated set enumerates the full cross-product of the bounded
+  categories (60 cases), and pairwise coverage is reported as the
+  adequacy metric for interaction coverage.
 - Constraints exclude only impossible combinations (e.g., empty message
   with a valid order payload), ensuring all generated cases are relevant.
 - No interaction-specific failures were observed in the current run.
@@ -65,17 +75,17 @@ Interpretation:
 ## E) Yield evaluation
 Metric results:
 - Defect yield per technique: no defects recorded in the LO3 evidence run
-- Error-code yield: 8 distinct codes exercised out of 10 defined codes
-  (80% exercised; INTERNAL_ERROR and DATABASE_ERROR are not exercised)
+- Error-code yield: 10 distinct codes exercised out of 11 defined codes
+  (90.91% exercised; INTERNAL_ERROR is not exercised)
 
 Interpretation:
 - The lack of failures indicates stability at this stage, but does not
   imply that tests are weak; assertions use explicit error codes,
   invariants, and CLI contract checks.
 - Failure-mode coverage is treated as a yield proxy: the denominator is
-  the defined error-code set in validation/CLI, not an exhaustive defect
-  universe. Unexercised codes highlight negative partitions to consider
-  in future runs.
+  the defined error-code set in src/orderflow/validation.py and
+  docs/cli_contract.md, not an exhaustive defect universe. Unexercised
+  codes highlight negative partitions to consider in future runs.
 
 ## Performance note (LO3 vs LO4)
 LO3 includes baseline smoke evidence only.

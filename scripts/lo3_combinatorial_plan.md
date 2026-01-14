@@ -1,4 +1,4 @@
-# LO3 Combinatorial Plan — Category-Partition + Bounded Pairwise (template)
+# LO3 Combinatorial Plan — Category-Partition + Full Cross-Product
 
 Purpose:
 - Define categories and choices for systematic combinatorial testing.
@@ -17,5 +17,6 @@ Purpose:
 
 ## Coverage criteria
 - Category coverage: each choice used at least once
-- Pairwise coverage: within a bounded subset (e.g., mobile_class x message_class x auth_class)
-
+- Pairwise coverage reported as an adequacy metric within a bounded subset
+  (e.g., mobile_class x message_class x auth_class), even when the full
+  cross-product is enumerated because the space is small and bounded.

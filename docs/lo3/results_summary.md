@@ -36,7 +36,7 @@ Reports:
 - Integration boundary + invariants: Y
 - System CLI contract tests (exit codes + stdout schema): Y
 - Structural coverage computed: Y
-- Combinatorial testing (category + bounded pairwise): Y
+- Combinatorial testing (full cross-product; pairwise adequacy): Y
 - Model-based testing (FSM state/transition coverage): Y
 - Property-based testing (Hypothesis): Y
 
