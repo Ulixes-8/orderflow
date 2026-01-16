@@ -62,6 +62,12 @@ def _validate_targets_schema(payload: Dict[str, Any]) -> None:
         raise ValueError("targets.json missing failure_modes.")
     if "performance" not in payload:
         raise ValueError("targets.json missing performance.")
+    batch_targets = payload.get("performance", {}).get("batch", {})
+    if "minimum" not in batch_targets or "stretch" not in batch_targets:
+        raise ValueError("targets.json missing batch minimum/stretch tiers.")
+    throughput_targets = batch_targets.get("throughput", {})
+    if "minimum" not in throughput_targets or "stretch" not in throughput_targets:
+        raise ValueError("targets.json missing batch throughput tiers.")
 
 
 def _validate_comparison_schema(payload: Dict[str, Any]) -> None:
@@ -88,6 +94,42 @@ def _validate_summary_sections(summary_text: str) -> None:
     for section in required_sections:
         if section not in summary_text:
             raise ValueError(f"Missing summary section: {section}")
+
+    required_gap_phrases = [
+        "Missing failure modes",
+        "Performance targets not met",
+        "operational envelope",
+        "subprocess",
+        "exception/fault",
+        "mutation",
+        "Statistical assumptions",
+    ]
+    for phrase in required_gap_phrases:
+        if phrase not in summary_text:
+            raise ValueError(f"Missing required gap topic in LO4.1 table: {phrase}")
+
+
+def _validate_throughput_stats(targets: Dict[str, Any], stats: Dict[str, Any]) -> None:
+    """Validate throughput stats presence when throughput targets exist."""
+
+    throughput_targets = (
+        targets.get("performance", {}).get("batch", {}).get("throughput", {})
+    )
+    if throughput_targets:
+        throughput_stats = stats.get("batch", {}).get("throughput")
+        if not throughput_stats:
+            raise ValueError("performance_stats.json missing batch throughput stats.")
+        required_keys = {
+            "mean_lines_per_sec",
+            "median_lines_per_sec",
+            "stdev_lines_per_sec",
+            "ci_mean_lines_per_sec",
+        }
+        missing = required_keys - set(throughput_stats.keys())
+        if missing:
+            raise ValueError(
+                f"performance_stats.json throughput stats missing keys: {sorted(missing)}"
+            )
 
 
 def _assert_lo3_clean() -> None:
@@ -119,8 +161,10 @@ def main() -> None:
 
     targets = _load_json(artifacts_dir / "targets.json")
     comparison = _load_json(artifacts_dir / "comparison.json")
+    performance_stats = _load_json(artifacts_dir / "performance_stats.json")
     _validate_targets_schema(targets)
     _validate_comparison_schema(comparison)
+    _validate_throughput_stats(targets, performance_stats)
 
     summary_text = summary_path.read_text(encoding="utf-8")
     _validate_summary_sections(summary_text)

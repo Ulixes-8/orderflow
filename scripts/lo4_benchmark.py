@@ -16,7 +16,7 @@ from typing import Dict, List
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.lo4_stats import BootstrapConfig, summarize_samples
+from scripts.lo4_stats import BootstrapConfig, summarize_samples, summarize_throughput
 
 SRC_ROOT = REPO_ROOT / "src"
 CATALOGUE_PATH = REPO_ROOT / "data" / "catalogue.json"
@@ -214,10 +214,17 @@ def main() -> None:
     }
 
     bootstrap = BootstrapConfig(resamples=2000, seed=0)
+    batch_summary = summarize_samples(batch_samples, bootstrap)
+    batch_summary["throughput"] = summarize_throughput(
+        batch_samples,
+        batch_lines,
+        bootstrap,
+    )
+
     stats_payload = {
         "generated_at": samples_payload["generated_at"],
         "place": summarize_samples(place_samples, bootstrap),
-        "batch": summarize_samples(batch_samples, bootstrap),
+        "batch": batch_summary,
         "ci_method": "bootstrap_percentile",
         "bootstrap_resamples": bootstrap.resamples,
         "assumptions": [

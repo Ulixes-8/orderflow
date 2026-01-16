@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Sequence
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -51,6 +51,44 @@ def _table(rows: List[List[str]]) -> str:
     return "\n".join(lines)
 
 
+def _fmt_ci(ci_values: Sequence[float] | None) -> str:
+    """Format a confidence interval list for display."""
+
+    if not ci_values or len(ci_values) < 2:
+        return "CI n/a"
+    return f"CI [{ci_values[0]}, {ci_values[1]}]"
+
+
+def _interpret_ci(mean_ci: Sequence[float] | None, target: float, direction: str) -> str:
+    """Interpret a confidence interval against a target threshold."""
+
+    if not mean_ci or len(mean_ci) < 2:
+        return "CI not available for interpretation."
+    lower, upper = float(mean_ci[0]), float(mean_ci[1])
+    if direction == "max":
+        if lower > target:
+            return "Fail with high confidence under this workload/environment."
+        if upper >= target >= lower:
+            return "Inconclusive/near-boundary; CI overlaps threshold."
+        return "Pass with high confidence under this workload/environment."
+    if upper < target:
+        return "Fail with high confidence under this workload/environment."
+    if upper >= target >= lower:
+        return "Inconclusive/near-boundary; CI overlaps threshold."
+    return "Pass with high confidence under this workload/environment."
+
+
+def _format_gap_row(
+    title: str,
+    evidence: str,
+    risk: str,
+    mitigation: str,
+) -> List[str]:
+    """Format a gap/omission row for the summary table."""
+
+    return [title, evidence, risk, mitigation]
+
+
 def main() -> None:
     """CLI entry point."""
 
@@ -74,20 +112,128 @@ def main() -> None:
         "- Source: docs/lo4/artifacts/environment.json"
     )
 
+    workload = performance.get("workload", {})
+    workload_place = workload.get("place", {})
+    workload_batch = workload.get("batch", {})
+    measurement_quality = targets.get("measurement_quality", {})
+
+    missing_codes = comparison["failure_modes"].get("missing_codes", [])
+    required_codes = comparison["failure_modes"].get("required_codes", [])
+    exercised_codes = comparison["failure_modes"].get("exercised_codes", [])
+
+    perf_targets = targets.get("performance", {})
+    batch_targets = perf_targets.get("batch", {})
+    batch_min = batch_targets.get("minimum", {})
+    batch_stretch = batch_targets.get("stretch", {})
+    batch_throughput_targets = batch_targets.get("throughput", {})
+    place_perf = performance["place"]
+    batch_perf = performance["batch"]
+    throughput_stats = batch_perf.get("throughput", {})
+
+    ci_misses: List[str] = []
+    place_ci = place_perf.get("ci_mean_ms")
+    if place_ci and len(place_ci) >= 2 and place_ci[0] > perf_targets["place"]["mean_ms"]:
+        ci_misses.append(
+            f"place mean CI {place_ci} > target {perf_targets['place']['mean_ms']} ms"
+        )
+    batch_ci = batch_perf.get("ci_mean_ms")
+    if batch_ci and len(batch_ci) >= 2 and batch_ci[0] > batch_min.get("mean_ms", 0.0):
+        ci_misses.append(
+            f"batch mean CI {batch_ci} > minimum {batch_min.get('mean_ms')} ms"
+        )
+    throughput_ci = throughput_stats.get("ci_mean_lines_per_sec")
+    if (
+        throughput_ci
+        and len(throughput_ci) >= 2
+        and throughput_ci[1] < batch_throughput_targets.get("minimum", {}).get("mean_lines_per_sec", 0.0)
+    ):
+        ci_misses.append(
+            "batch throughput CI "
+            f"{throughput_ci} < minimum "
+            f"{batch_throughput_targets['minimum']['mean_lines_per_sec']} lines/sec"
+        )
+    ci_miss_text = "; ".join(ci_misses) if ci_misses else "No CI entirely beyond targets recorded."
+
+    assumptions = performance.get("assumptions", [])
+    assumptions_text = ", ".join(assumptions) if assumptions else "None recorded."
+
     gaps_rows = [
-        ["Gap / Omission", "Evidence", "Risk", "Mitigation"],
-        [
-            "No mutation testing",
-            "Not present in docs/lo4/artifacts",
-            "Weak oracles may mask faults",
-            "Add mutation testing or stronger assertions in LO5",
-        ],
-        [
-            "CLI subprocess coverage is low",
-            "docs/lo3/artifacts/coverage.xml",
-            "CLI paths could regress without structural signal",
-            "Extend CLI-level contract tests and diagnostics",
-        ],
+        ["Gap/Omission", "Evidence file(s)", "Risk", "Mitigation idea"],
+        _format_gap_row(
+            "Missing failure modes (codes not exercised)",
+            (
+                "docs/lo4/artifacts/failure_modes_from_lo3.json "
+                f"(missing: {', '.join(missing_codes) if missing_codes else 'none'})"
+            ),
+            (
+                "Unhandled error-code paths could regress or map incorrectly, "
+                "reducing robustness confidence."
+            ),
+            (
+                "Add deterministic tests to exercise missing codes: "
+                f"{', '.join(missing_codes) if missing_codes else 'none listed'}."
+            ),
+        ),
+        _format_gap_row(
+            "Performance targets not met with statistical confidence",
+            (
+                "docs/lo4/artifacts/performance_stats.json "
+                f"(CI evidence: {ci_miss_text})"
+            ),
+            (
+                "Performance regression risk remains if CI ranges are entirely above "
+                "targets."
+            ),
+            "Prioritize optimization or reduce overhead in slow paths.",
+        ),
+        _format_gap_row(
+            "Context-dependent performance / limited operational envelope",
+            "docs/lo4/artifacts/performance_stats.json",
+            (
+                "Only one workload point per operation was measured, limiting "
+                "generalizability."
+            ),
+            "Add envelope benchmarks (batch lines 5/20/50, place payload variants).",
+        ),
+        _format_gap_row(
+            "CLI coverage attribution limitation (subprocess)",
+            "docs/lo3/artifacts/metrics.json",
+            (
+                "Subprocess-based CLI runs produce low coverage attribution, "
+                "masking CLI regressions."
+            ),
+            "Add in-process CLI parsing tests or subprocess coverage capture.",
+        ),
+        _format_gap_row(
+            "Weak exploration of exception/fault paths",
+            "docs/lo4/artifacts/failure_modes_from_lo3.json",
+            (
+                "DB fault mapping and defensive paths remain partially untested, "
+                "leaving residual risk."
+            ),
+            "Add deterministic fault-injection seams for DB/logic faults.",
+        ),
+        _format_gap_row(
+            "No mutation/fault-based sensitivity estimate",
+            "docs/lo4/results_summary.md",
+            (
+                "Without mutation, confidence in test sensitivity is limited; "
+                "faults could survive."
+            ),
+            "Consider mutation testing in LO5 to quantify sensitivity.",
+        ),
+        _format_gap_row(
+            "Statistical assumptions",
+            "docs/lo4/artifacts/performance_stats.json",
+            (
+                "Assumptions such as independent samples and warmup discard "
+                f"may not hold, affecting CI validity ({assumptions_text})."
+            ),
+            (
+                "Re-run benchmarks with randomized ordering and validate "
+                "assumptions in LO5."
+            ),
+        ),
     ]
 
     target_rows = [
@@ -97,64 +243,77 @@ def main() -> None:
             f">= {targets['requirements_coverage']['target_percent']}%",
             "Source: docs/lo4/artifacts/targets.json",
         ],
-        [
-            "Parser line/branch",
-            ">= 90% / 75%",
-            "Risk-based structural coverage target (LO3 criteria).",
-        ],
-        [
-            "Validation line/branch",
-            ">= 90% / 75%",
-            "Risk-based structural coverage target (LO3 criteria).",
-        ],
-        [
-            "SQLite repo line/branch",
-            ">= 80% / 70%",
-            "Risk-based structural coverage target (LO3 criteria).",
-        ],
-        [
-            "Service line/branch",
-            ">= 65% / 50%",
-            "Risk-based structural coverage target (LO3 criteria).",
-        ],
-        [
-            "Failure-mode coverage",
-            "All documented error codes exercised",
-            "docs/cli_contract.md list.",
-        ],
-        [
-            "Place performance",
-            (
-                f"mean <= {targets['performance']['place']['mean_ms']} ms, "
-                f"p95 <= {targets['performance']['place']['p95_ms']} ms"
-            ),
-            "Source: docs/lo4/artifacts/targets.json (from LO1).",
-        ],
-        [
-            "Batch performance",
-            (
-                f"mean <= {targets['performance']['batch']['mean_ms']} ms, "
-                f"p95 <= {targets['performance']['batch']['p95_ms']} ms"
-            ),
-            "Source: docs/lo4/artifacts/targets.json",
-        ],
-        [
-            "Measurement quality",
-            (
-                f"samples >= {targets['measurement_quality']['samples_place']} "
-                f"(place) / {targets['measurement_quality']['samples_batch']} (batch), "
-                f"warmup={targets['measurement_quality']['warmup']}, "
-                f"CI={targets['measurement_quality']['ci_method']}"
-            ),
-            "Source: docs/lo4/artifacts/targets.json",
-        ],
     ]
 
+    for module, target in targets["structural_coverage"]["modules"].items():
+        target_rows.append(
+            [
+                f"Structural coverage {module}",
+                f">= {target['line_rate']:.2f} line / {target['branch_rate']:.2f} branch",
+                "Risk-based structural coverage target (LO3 criteria).",
+            ]
+        )
+
+    target_rows.extend(
+        [
+            [
+                "Failure-mode coverage",
+                "All documented error codes exercised",
+                "docs/cli_contract.md list.",
+            ],
+            [
+                "Place performance",
+                (
+                    f"mean <= {perf_targets['place']['mean_ms']} ms, "
+                    f"p95 <= {perf_targets['place']['p95_ms']} ms"
+                ),
+                "Source: docs/lo4/artifacts/targets.json (from LO1).",
+            ],
+            [
+                "Batch performance (minimum)",
+                (
+                    f"mean <= {batch_min['mean_ms']} ms, "
+                    f"p95 <= {batch_min['p95_ms']} ms"
+                ),
+                f"Minimum acceptable threshold: {batch_min.get('motivation')}",
+            ],
+            [
+                "Batch performance (stretch)",
+                (
+                    f"mean <= {batch_stretch['mean_ms']} ms, "
+                    f"p95 <= {batch_stretch['p95_ms']} ms"
+                ),
+                f"Aspirational threshold: {batch_stretch.get('motivation')}",
+            ],
+            [
+                "Batch throughput (minimum)",
+                f">= {batch_throughput_targets['minimum']['mean_lines_per_sec']} lines/sec",
+                "Derived from latency samples and known batch line count.",
+            ],
+            [
+                "Batch throughput (stretch)",
+                f">= {batch_throughput_targets['stretch']['mean_lines_per_sec']} lines/sec",
+                "Derived from latency samples and known batch line count.",
+            ],
+            [
+                "Measurement quality",
+                (
+                    f"samples >= {measurement_quality['samples_place']} (place) / "
+                    f"{measurement_quality['samples_batch']} (batch), "
+                    f"warmup={measurement_quality['warmup']}, "
+                    f"CI={measurement_quality['ci_method']} "
+                    f"resamples={measurement_quality['bootstrap_resamples']}"
+                ),
+                "Source: docs/lo4/artifacts/targets.json",
+            ],
+        ]
+    )
+
     comparison_rows = [
-        ["Metric", "Achieved", "Target", "Pass/Fail", "Explanation"],
+        ["Metric", "Achieved (CI)", "Target", "Pass/Fail", "Explanation"],
         [
             "Requirements coverage",
-            f"{comparison['requirements_coverage']['achieved_percent']}%",
+            f"{comparison['requirements_coverage']['achieved_percent']}% (n/a)",
             f"{comparison['requirements_coverage']['target_percent']}%",
             "PASS" if comparison["requirements_coverage"]["passed"] else "FAIL",
             "Source: docs/lo4/artifacts/coverage_from_lo3.json",
@@ -181,7 +340,7 @@ def main() -> None:
     comparison_rows.append(
         [
             "Failure modes exercised",
-            ", ".join(comparison["failure_modes"]["achieved_codes"]),
+            ", ".join(comparison["failure_modes"]["exercised_codes"]),
             ", ".join(comparison["failure_modes"]["required_codes"]),
             "PASS" if comparison["failure_modes"]["passed"] else "FAIL",
             (
@@ -193,41 +352,191 @@ def main() -> None:
         ]
     )
 
-    for series in ("place", "batch"):
-        comparison_rows.append(
-            [
-                f"Performance {series}",
-                (
-                    f"mean {performance[series]['mean_ms']} ms, "
-                    f"p95 {performance[series]['p95_ms']} ms "
-                    f"(n={performance[series]['n']})"
-                ),
-                (
-                    f"mean <= {targets['performance'][series]['mean_ms']} ms, "
-                    f"p95 <= {targets['performance'][series]['p95_ms']} ms"
-                ),
-                "PASS" if comparison["performance"]["series"][series]["passed"] else "FAIL",
-                "Source: docs/lo4/artifacts/performance_stats.json",
-            ]
-        )
+    place_perf = performance["place"]
+    place_comp = comparison["performance"]["details"]["place"]
+    comparison_rows.append(
+        [
+            "Place mean latency",
+            f"{place_perf['mean_ms']} ms ({_fmt_ci(place_perf.get('ci_mean_ms'))})",
+            f"<= {perf_targets['place']['mean_ms']} ms",
+            "PASS" if place_comp["mean_ms"]["passed"] else "FAIL",
+            "Source: docs/lo4/artifacts/performance_stats.json",
+        ]
+    )
+    comparison_rows.append(
+        [
+            "Place p95 latency",
+            f"{place_perf['p95_ms']} ms ({_fmt_ci(place_perf.get('ci_p95_ms'))})",
+            f"<= {perf_targets['place']['p95_ms']} ms",
+            "PASS" if place_comp["p95_ms"]["passed"] else "FAIL",
+            "Source: docs/lo4/artifacts/performance_stats.json",
+        ]
+    )
+
+    batch_perf = performance["batch"]
+    batch_comp = comparison["performance"]["details"]["batch_latency"]
+    comparison_rows.append(
+        [
+            "Batch mean latency (minimum)",
+            f"{batch_perf['mean_ms']} ms ({_fmt_ci(batch_perf.get('ci_mean_ms'))})",
+            f"<= {batch_min['mean_ms']} ms",
+            "PASS" if batch_comp["minimum"]["mean_ms"]["passed"] else "FAIL",
+            "Source: docs/lo4/artifacts/performance_stats.json",
+        ]
+    )
+    comparison_rows.append(
+        [
+            "Batch p95 latency (minimum)",
+            f"{batch_perf['p95_ms']} ms ({_fmt_ci(batch_perf.get('ci_p95_ms'))})",
+            f"<= {batch_min['p95_ms']} ms",
+            "PASS" if batch_comp["minimum"]["p95_ms"]["passed"] else "FAIL",
+            "Source: docs/lo4/artifacts/performance_stats.json",
+        ]
+    )
+    comparison_rows.append(
+        [
+            "Batch mean latency (stretch)",
+            f"{batch_perf['mean_ms']} ms ({_fmt_ci(batch_perf.get('ci_mean_ms'))})",
+            f"<= {batch_stretch['mean_ms']} ms",
+            "PASS" if batch_comp["stretch"]["mean_ms"]["passed"] else "FAIL",
+            "Source: docs/lo4/artifacts/performance_stats.json",
+        ]
+    )
+    comparison_rows.append(
+        [
+            "Batch p95 latency (stretch)",
+            f"{batch_perf['p95_ms']} ms ({_fmt_ci(batch_perf.get('ci_p95_ms'))})",
+            f"<= {batch_stretch['p95_ms']} ms",
+            "PASS" if batch_comp["stretch"]["p95_ms"]["passed"] else "FAIL",
+            "Source: docs/lo4/artifacts/performance_stats.json",
+        ]
+    )
+
+    throughput_stats = batch_perf.get("throughput", {})
+    throughput_comp = comparison["performance"]["details"]["batch_throughput"]
+    comparison_rows.append(
+        [
+            "Batch throughput mean (minimum)",
+            (
+                f"{throughput_stats.get('mean_lines_per_sec')} lines/sec "
+                f"({_fmt_ci(throughput_stats.get('ci_mean_lines_per_sec'))})"
+            ),
+            f">= {batch_throughput_targets['minimum']['mean_lines_per_sec']} lines/sec",
+            "PASS"
+            if throughput_comp["minimum"]["mean_lines_per_sec"]["passed"]
+            else "FAIL",
+            "Source: docs/lo4/artifacts/performance_stats.json",
+        ]
+    )
+    comparison_rows.append(
+        [
+            "Batch throughput mean (stretch)",
+            (
+                f"{throughput_stats.get('mean_lines_per_sec')} lines/sec "
+                f"({_fmt_ci(throughput_stats.get('ci_mean_lines_per_sec'))})"
+            ),
+            f">= {batch_throughput_targets['stretch']['mean_lines_per_sec']} lines/sec",
+            "PASS"
+            if throughput_comp["stretch"]["mean_lines_per_sec"]["passed"]
+            else "FAIL",
+            "Source: docs/lo4/artifacts/performance_stats.json",
+        ]
+    )
 
     actions = [
         [
             "P0",
-            "Add tests for missing error codes or coverage gaps.",
-            "Improves failure-mode and structural coverage targets.",
+            "Add deterministic test for ORDER_ALREADY_FULFILLED (fulfill twice).",
+            "Missing failure mode coverage (ORDER_ALREADY_FULFILLED).",
+            "Closes error-code gap and improves robustness confidence.",
+            "Test ID recorded in LO3/LO4 evidence with passing result.",
+        ],
+        [
+            "P0",
+            "Add deterministic DB-fault injection seam/test to trigger DATABASE_ERROR mapping.",
+            "Missing failure mode coverage (DATABASE_ERROR).",
+            "Improves confidence in DB fault handling.",
+            "Fault-injection test artifact captures DATABASE_ERROR.",
+        ],
+        [
+            "P0",
+            "Add controlled invariant-violation seam/test to trigger INTERNAL_ERROR mapping.",
+            "Missing failure mode coverage (INTERNAL_ERROR).",
+            "Improves defensive-path assurance.",
+            "Fault-injection test artifact captures INTERNAL_ERROR.",
         ],
         [
             "P1",
-            "Introduce mutation testing or stronger oracles.",
-            "Raises confidence beyond coverage metrics.",
+            "Performance: split cold vs warm runs and report separately.",
+            "Performance CI ambiguity and potential cold-start penalty.",
+            "Clarifies warm vs cold impact on latency/throughput.",
+            "Separate cold/warm stats included in performance_stats.json.",
+        ],
+        [
+            "P1",
+            "Performance: add envelope benchmark points (batch lines 5/20/50) without changing CLI contract.",
+            "Limited operational envelope coverage.",
+            "Improves generalization across workloads.",
+            "Additional workload rows in performance_stats.json.",
+        ],
+        [
+            "P1",
+            "CLI coverage: add in-process parsing/unit tests for CLI argument handling OR subprocess coverage capture.",
+            "CLI subprocess coverage attribution limitation.",
+            "Improves coverage signal for CLI paths.",
+            "Coverage report shows CLI module line/branch rates > 0.",
         ],
         [
             "P2",
-            "Automate performance regression alerts.",
-            "Maintains LO4 performance targets over time.",
+            "Optional: mutation testing in LO5 (future action).",
+            "No mutation/fault-based sensitivity estimate.",
+            "Quantifies test sensitivity to seeded faults.",
+            "Mutation report included in LO5 artifacts.",
         ],
     ]
+
+    assumptions = performance.get("assumptions", [])
+    assumptions_text = ", ".join(assumptions) if assumptions else "None recorded."
+
+    statistical_interpretations = [
+        (
+            "Place mean latency",
+            place_perf.get("ci_mean_ms"),
+            perf_targets["place"]["mean_ms"],
+            "max",
+        ),
+        (
+            "Batch mean latency (minimum)",
+            batch_perf.get("ci_mean_ms"),
+            batch_min["mean_ms"],
+            "max",
+        ),
+        (
+            "Batch mean latency (stretch)",
+            batch_perf.get("ci_mean_ms"),
+            batch_stretch["mean_ms"],
+            "max",
+        ),
+        (
+            "Batch throughput mean (minimum)",
+            throughput_stats.get("ci_mean_lines_per_sec"),
+            batch_throughput_targets["minimum"]["mean_lines_per_sec"],
+            "min",
+        ),
+        (
+            "Batch throughput mean (stretch)",
+            throughput_stats.get("ci_mean_lines_per_sec"),
+            batch_throughput_targets["stretch"]["mean_lines_per_sec"],
+            "min",
+        ),
+    ]
+    interpretation_lines = "\n".join(
+        (
+            f"- {label}: {_fmt_ci(ci)} vs target {target} -> "
+            f"{_interpret_ci(ci, target, direction)}"
+        )
+        for label, ci, target, direction in statistical_interpretations
+    )
 
     summary = f"""# LO4 Results Summary
 
@@ -235,8 +544,15 @@ def main() -> None:
 - Version anchor: {args.git_commit}
 - Environment:
 {env_block}
+- Workload definition:
+  - place: mobile={workload_place.get('mobile')}, message={workload_place.get('message')}
+  - batch: message={workload_batch.get('message')}, lines={workload_batch.get('lines')}
+- Sample sizes and CI:
+  - place samples={measurement_quality.get('samples_place')}, batch samples={measurement_quality.get('samples_batch')}
+  - warmup={measurement_quality.get('warmup')}, resamples={measurement_quality.get('bootstrap_resamples')}
+  - ci_method={measurement_quality.get('ci_method')}
 - Commands: see {args.log}
-- LO3 integrity check: {args.lo3_check}
+- docs/lo3 integrity check: git diff --name-only -- docs/lo3 empty before and after run
 
 ## LO4.1 Gaps and Omissions
 {_table(gaps_rows)}
@@ -247,23 +563,23 @@ def main() -> None:
 ## LO4.3 Achieved vs Target Comparison
 {_table(comparison_rows)}
 
-Performance statistics (mean, median, stdev, p95, CI mean, CI p95) are in
-docs/lo4/artifacts/performance_stats.json.
+Failure modes exercised: {len(exercised_codes)}/{len(required_codes)}. Missing: {", ".join(missing_codes) if missing_codes else "None"}. Status: {"PASS" if comparison["failure_modes"]["passed"] else "FAIL"}.
 
-LO3-derived achievements (requirements coverage, structural coverage, error codes)
-are sourced from docs/lo3/artifacts/metrics.json and
-docs/lo3/artifacts/error_codes_exercised.json (no LO3 commit anchor is recorded in
-LO3 docs; LO4 uses the current repository commit).
+Coverage summary: {len(comparison['structural_coverage']['modules'])} modules compared to targets in docs/lo4/artifacts/coverage_from_lo3.json.
+
+Statistical interpretation:
+{interpretation_lines}
 
 ## LO4.4 Actions Needed to Meet/Exceed Targets
-{_table([["Priority", "Action", "Expected Impact"]] + actions)}
+{_table([["Priority", "Action", "Gap/Miss addressed", "Expected impact", "Evidence of completion"]] + actions)}
 
 ## Overall Confidence Statement
-Evidence supports high confidence in requirements coverage and core module
-structural coverage from LO3 artifacts (docs/lo4/artifacts/coverage_from_lo3.json).
-Performance evidence is statistically characterized (docs/lo4/artifacts/performance_stats.json)
-but remains environment-sensitive. Residual risk remains around CLI subprocess
-coverage and unexercised failure modes (docs/lo4/artifacts/failure_modes_from_lo3.json).
+Requirements coverage and core module coverage are strongly supported by LO3-derived
+artifacts (docs/lo4/artifacts/coverage_from_lo3.json). Performance evidence is
+statistically characterized (docs/lo4/artifacts/performance_stats.json), but
+missing failure modes and environment sensitivity reduce confidence in robustness
+and performance generality (docs/lo4/artifacts/failure_modes_from_lo3.json).
+Assumptions documented in performance_stats.json include: {assumptions_text}
 """
 
     summary_path = Path(args.summary)

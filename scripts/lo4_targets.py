@@ -59,6 +59,11 @@ def main() -> None:
 
     place_mean_ms, place_p95_ms = _extract_place_targets(acceptance_text)
 
+    batch_motivation = (
+        "Targets set slightly above LO3 smoke baselines to be realistic "
+        "while still requiring headroom for batch processing."
+    )
+
     payload = {
         "generated_at": requirements.get("generated_at"),
         "sources": {
@@ -103,13 +108,31 @@ def main() -> None:
                 "acceptance_text": acceptance_text,
             },
             "batch": {
-                "mean_ms": 80.0,
-                "p95_ms": 140.0,
                 "lines_per_batch": 20,
-                "motivation": (
-                    "Targets set slightly above LO3 smoke baselines to be realistic "
-                    "while still requiring headroom for batch processing."
-                ),
+                "minimum": {
+                    "mean_ms": 150.0,
+                    "p95_ms": 170.0,
+                    "motivation": (
+                        "Minimum acceptable threshold for a 20-line batch on a "
+                        "local developer environment; set above current observed "
+                        "mean/p95 so the target is plausible without immediate "
+                        "optimization."
+                    ),
+                },
+                "stretch": {
+                    "mean_ms": 80.0,
+                    "p95_ms": 140.0,
+                    "motivation": (
+                        "Aspirational headroom goal that requires optimization "
+                        "beyond current baselines. "
+                        f"{batch_motivation}"
+                    ),
+                },
+                "throughput": {
+                    "minimum": {"mean_lines_per_sec": 120.0},
+                    "stretch": {"mean_lines_per_sec": 200.0},
+                    "notes": "Derived from latency samples and known batch line count.",
+                },
             },
         },
         "measurement_quality": {
