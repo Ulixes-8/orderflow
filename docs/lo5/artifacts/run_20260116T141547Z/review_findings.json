@@ -1,0 +1,62 @@
+[
+  {
+    "description": "A broad exception handler can mask error categories and reduce determinism.",
+    "file": "src/orderflow/service.py",
+    "id": "EXCEPT_service.py_156",
+    "line": 156,
+    "rationale": "Catching broad exceptions makes it harder to map failures to specific error codes and can obscure root causes.",
+    "recommendation": "Catch specific exception types and preserve deterministic error mapping paths.",
+    "severity": "P2",
+    "title": "Broad exception handler"
+  },
+  {
+    "description": "A broad exception handler can mask error categories and reduce determinism.",
+    "file": "src/orderflow/service.py",
+    "id": "EXCEPT_service.py_201",
+    "line": 201,
+    "rationale": "Catching broad exceptions makes it harder to map failures to specific error codes and can obscure root causes.",
+    "recommendation": "Catch specific exception types and preserve deterministic error mapping paths.",
+    "severity": "P2",
+    "title": "Broad exception handler"
+  },
+  {
+    "description": "A broad exception handler can mask error categories and reduce determinism.",
+    "file": "src/orderflow/service.py",
+    "id": "EXCEPT_service.py_255",
+    "line": 255,
+    "rationale": "Catching broad exceptions makes it harder to map failures to specific error codes and can obscure root causes.",
+    "recommendation": "Catch specific exception types and preserve deterministic error mapping paths.",
+    "severity": "P2",
+    "title": "Broad exception handler"
+  },
+  {
+    "description": "A broad exception handler can mask error categories and reduce determinism.",
+    "file": "src/orderflow/service.py",
+    "id": "EXCEPT_service.py_284",
+    "line": 284,
+    "rationale": "Catching broad exceptions makes it harder to map failures to specific error codes and can obscure root causes.",
+    "recommendation": "Catch specific exception types and preserve deterministic error mapping paths.",
+    "severity": "P2",
+    "title": "Broad exception handler"
+  },
+  {
+    "description": "Service invariants/checks exist without an explicit fault-injection seam.",
+    "file": "src/orderflow/service.py",
+    "id": "SEAM_INTERNAL_service",
+    "line": 133,
+    "rationale": "Internal error paths are difficult to test without a controllable seam, risking regressions.",
+    "recommendation": "Provide a deterministic injection hook to simulate INTERNAL_ERROR conditions during tests.",
+    "severity": "P2",
+    "title": "Missing INTERNAL_ERROR injection seam"
+  },
+  {
+    "description": "Function 'main' spans 68 lines, which can limit readability and testability.",
+    "file": "src/orderflow/cli.py",
+    "id": "LONG_FN_cli.py_main",
+    "line": 48,
+    "rationale": "Large functions increase cognitive load and are harder to review for edge cases.",
+    "recommendation": "Consider extracting helper functions or refactoring into smaller units.",
+    "severity": "P2",
+    "title": "Large function may hinder maintainability"
+  }
+]

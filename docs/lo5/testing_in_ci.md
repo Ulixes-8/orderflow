@@ -12,13 +12,13 @@ python scripts/validate_lo1.py
 python scripts/validate_lo2.py
 python scripts/validate_lo4.py
 python scripts/validate_lo5.py --summary docs/lo5/results_summary.md \
-  --log docs/lo5/results_log.md --artifacts docs/lo5/artifacts/<run_id>
+  --log docs/lo5/results_log.md --artifacts docs/lo5/artifacts/<run_20260116T141547Z>
 ```
 
 ### Stage 1: Unit and integration tests (fast)
 
 ```bash
-pytest -q --disable-warnings --maxfail=1 --junitxml docs/lo5/artifacts/<run_id>/junit.xml
+pytest -q --disable-warnings --maxfail=1 --junitxml docs/lo5/artifacts/<run_20260116T141547Z>/junit.xml
 ```
 
 These tests are merge-gating because they are expected to be fast and provide
@@ -31,7 +31,7 @@ move them to nightly. Example (placeholder):
 
 ```bash
 pytest -q tests/contract --disable-warnings --maxfail=1 \
-  --junitxml docs/lo5/artifacts/<run_id>/junit_contract.xml
+  --junitxml docs/lo5/artifacts/<run_20260116T141547Z>/junit_contract.xml
 ```
 
 ## Nightly (non-gating)

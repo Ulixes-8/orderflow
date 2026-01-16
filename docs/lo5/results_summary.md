@@ -1,14 +1,21 @@
 # LO5 Results Summary
 ## Reproducibility and Integrity Checks
-- Git commit: `1ddd0f8a43f17815e6eec4bdd0a6a3cd0a06da53`
+- Git commit: `8ddb3b67769eee2aeb1ec429a5a908893c5b83d7`
 - OS/Python/CPU/Cores/RAM: Linux 6.6.87.2-microsoft-standard-WSL2 / CPython 3.12.3 / x86_64 / 32 cores / 30.16 GB
-- Run directory: `docs/lo5/artifacts/run_20260116T135350Z`
-- LO3 diff check: COMMAND: git diff --name-only -- docs/lo3
+- Run directory: `docs/lo5/artifacts/run_20260116T141547Z`
+- LO3 diff check: empty
 ## LO5.1 Review criteria and findings
-- Findings by severity: P0=0, P1=0, P2=1
+- Findings by severity: P0=0, P1=0, P2=6
+- Total findings: 6
+- Findings by file: src/orderflow/cli.py=1, src/orderflow/service.py=5
 | ID | Severity | Title | File | Line | Recommendation |
 | --- | --- | --- | --- | --- | --- |
-| SEAM_DB_sqlite.py | P2 | Missing explicit DATABASE_ERROR seam | src/orderflow/store/sqlite.py | 1 | Add a dependency injection point or adapter that allows tests to trigger DATABASE_ERROR conditions. |
+| EXCEPT_service.py_156 | P2 | Broad exception handler | src/orderflow/service.py | 156 | Catch specific exception types and preserve deterministic error mapping paths. |
+| EXCEPT_service.py_201 | P2 | Broad exception handler | src/orderflow/service.py | 201 | Catch specific exception types and preserve deterministic error mapping paths. |
+| EXCEPT_service.py_255 | P2 | Broad exception handler | src/orderflow/service.py | 255 | Catch specific exception types and preserve deterministic error mapping paths. |
+| EXCEPT_service.py_284 | P2 | Broad exception handler | src/orderflow/service.py | 284 | Catch specific exception types and preserve deterministic error mapping paths. |
+| SEAM_INTERNAL_service | P2 | Missing INTERNAL_ERROR injection seam | src/orderflow/service.py | 133 | Provide a deterministic injection hook to simulate INTERNAL_ERROR conditions during tests. |
+| LONG_FN_cli.py_main | P2 | Large function may hinder maintainability | src/orderflow/cli.py | 48 | Consider extracting helper functions or refactoring into smaller units. |
 ## LO5.2 CI pipeline design summary
 Design only; not implemented. See `docs/lo5/ci_pipeline_design.md` for the proposed stages, triggers, and artifacts.
 ## LO5.3 Automated testing in CI

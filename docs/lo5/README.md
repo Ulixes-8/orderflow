@@ -5,7 +5,7 @@ automation scripts needed to generate a reproducible evidence pack. All LO5
 artifacts are intentionally isolated from LO3 outputs to avoid any accidental
 cross-contamination of evidence. The evidence runner enforces this isolation by
 exporting `ORDERFLOW_FORBID_LO3_WRITES=1` and writing into a unique
-`docs/lo5/artifacts/run_<UTC_ISO_COMPACT>/` directory.
+`docs/lo5/artifacts/run_run_20260116T141547Z/` directory.
 
 ## Contents
 
