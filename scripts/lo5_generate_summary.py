@@ -70,6 +70,16 @@ def _summarize_findings(findings: Sequence[Dict[str, str]]) -> Dict[str, int]:
     return counts
 
 
+def _summarize_findings_by_file(findings: Sequence[Dict[str, str]]) -> Dict[str, int]:
+    """Count findings by file path."""
+
+    counts: Dict[str, int] = {}
+    for finding in findings:
+        file_name = str(finding.get("file", "unknown"))
+        counts[file_name] = counts.get(file_name, 0) + 1
+    return counts
+
+
 def _format_ram(ram_bytes: int | None) -> str:
     """Format RAM information for display."""
 
@@ -80,15 +90,19 @@ def _format_ram(ram_bytes: int | None) -> str:
 
 
 def _extract_lo3_diff_statement(log_path: Path) -> str:
-    """Extract the most recent LO3 diff statement from the log."""
+    """Extract the most recent LO3 diff result statement from the log."""
 
     lines = log_path.read_text(encoding="utf-8").splitlines()
-    diff_lines = [
+    result_lines = [line for line in lines if "LO3 diff check:" in line]
+    if result_lines:
+        latest = result_lines[-1].strip()
+        return latest.split("LO3 diff check:", 1)[-1].strip() or "unknown"
+    command_lines = [
         line for line in lines if "git diff --name-only -- docs/lo3" in line
     ]
-    if not diff_lines:
-        return "No LO3 diff entry recorded."
-    return diff_lines[-1].strip()
+    if command_lines:
+        return "unknown (see log for command output)"
+    return "unknown (no entry recorded)"
 
 
 def _render_findings_table(findings: Iterable[Dict[str, str]]) -> str:
@@ -99,13 +113,15 @@ def _render_findings_table(findings: Iterable[Dict[str, str]]) -> str:
         "| --- | --- | --- | --- | --- | --- |",
     ]
     for finding in findings:
+        line_value = finding.get("line", "")
+        line_display = "n/a" if str(line_value) == "0" else str(line_value)
         rows.append(
             "| {id} | {severity} | {title} | {file} | {line} | {rec} |".format(
                 id=finding.get("id", ""),
                 severity=finding.get("severity", ""),
                 title=finding.get("title", ""),
                 file=finding.get("file", ""),
-                line=finding.get("line", ""),
+                line=line_display,
                 rec=finding.get("recommendation", ""),
             )
         )
@@ -138,6 +154,11 @@ def generate_summary(
     """Generate the markdown summary content."""
 
     counts = _summarize_findings(findings)
+    total_findings = sum(counts.values())
+    file_counts = _summarize_findings_by_file(findings)
+    file_breakdown = ", ".join(
+        f"{file_name}={count}" for file_name, count in sorted(file_counts.items())
+    )
     lo3_diff_statement = _extract_lo3_diff_statement(log_path)
     findings_table = _render_findings_table(findings)
     issue_examples = _render_issue_examples()
@@ -164,6 +185,8 @@ def generate_summary(
                 f"P1={counts.get('P1', 0)}, "
                 f"P2={counts.get('P2', 0)}"
             ),
+            f"- Total findings: {total_findings}",
+            f"- Findings by file: {file_breakdown}",
             findings_table,
             "## LO5.2 CI pipeline design summary",
             (
