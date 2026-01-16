@@ -34,10 +34,26 @@ LO1_REFS = [
 ]
 
 
+def _normalize_csv_value(value: object) -> str:
+    """Normalize CSV values to a safe, stripped string representation."""
+
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, (list, tuple)):
+        return " ".join(
+            str(item).strip() for item in value if str(item).strip()
+        ).strip()
+    return str(value).strip()
+
+
 def _read_csv(path: Path) -> list[dict[str, str]]:
+    """Read a CSV file into a list of sanitized dictionaries."""
+
     with path.open("r", encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
-        return [{k: (v or "").strip() for k, v in row.items()} for row in reader]
+        return [{k: _normalize_csv_value(v) for k, v in row.items()} for row in reader]
 
 
 def _load_requirements(path: Path) -> set[str]:
