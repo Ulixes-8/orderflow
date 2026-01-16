@@ -94,7 +94,7 @@ def _place_args(sku: str) -> List[str]:
         "--mobile",
         "+447700900123",
         "--message",
-        f"ORDER {sku} 1",
+        f"ORDER {sku}=1",
     ]
 
 
@@ -104,7 +104,7 @@ def _build_batch_input(path: Path, lines: int, sku: str) -> None:
     with path.open("w", encoding="utf-8") as handle:
         for index in range(lines):
             mobile = f"+447700900{100 + index:03d}"
-            handle.write(f"{mobile}|ORDER {sku} 1\n")
+            handle.write(f"{mobile}|ORDER {sku}=1\n")
 
 
 def _load_default_sku() -> str:
@@ -202,9 +202,9 @@ def main() -> None:
         "workload": {
             "place": {
                 "mobile": "+447700900123",
-                "message": f"ORDER {sku} 1",
+                "message": f"ORDER {sku}=1",
             },
-            "batch": {"lines": batch_lines, "message": f"ORDER {sku} 1"},
+            "batch": {"lines": batch_lines, "message": f"ORDER {sku}=1"},
         },
         "configuration": {
             "samples_place": samples_place,
