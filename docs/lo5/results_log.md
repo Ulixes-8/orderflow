@@ -4,3 +4,29 @@
 > timestamps, and integrity checks for LO5 evidence runs.
 
 No runs have been recorded yet.
+## LO5 Evidence Run 20260116T135350Z
+start_timestamp_utc: 2026-01-16T13:53:50Z
+git commit: 1ddd0f8a43f17815e6eec4bdd0a6a3cd0a06da53
+COMMAND: git diff --name-only -- docs/lo3
+LO3 diff check: empty
+COMMAND: python scripts/lo5_environment.py --output docs/lo5/artifacts/run_20260116T135350Z/environment.json
+COMMAND: python scripts/lo5_review_checks.py --output docs/lo5/artifacts/run_20260116T135350Z/review_findings.json
+COMMAND: python scripts/validate_lo1.py
+LO1 validation PASSED.
+- Requirements: 17
+COMMAND: python scripts/validate_lo2.py
+LO2 validation PASSED.
+- Inventory tests: 28
+- LO1 planned tests covered: 28
+- LO1 requirements covered: 17
+COMMAND: python scripts/validate_lo4.py --summary docs/lo4/results_summary.md --log docs/lo4/results_log.md --artifacts docs/lo4/artifacts
+LO4 validation OK.
+COMMAND: pytest -q --disable-warnings --maxfail=1 --junitxml docs/lo5/artifacts/run_20260116T135350Z/junit.xml
+..............................                                           [100%]
+30 passed in 4.01s
+COMMAND: python scripts/lo5_generate_summary.py --environment docs/lo5/artifacts/run_20260116T135350Z/environment.json --review-findings docs/lo5/artifacts/run_20260116T135350Z/review_findings.json --log docs/lo5/results_log.md --summary docs/lo5/results_summary.md --git-commit 1ddd0f8a43f17815e6eec4bdd0a6a3cd0a06da53 --run-dir docs/lo5/artifacts/run_20260116T135350Z
+COMMAND: python scripts/validate_lo5.py --summary docs/lo5/results_summary.md --log docs/lo5/results_log.md --artifacts docs/lo5/artifacts/run_20260116T135350Z
+LO5 validation passed.
+COMMAND: git diff --name-only -- docs/lo3
+LO3 diff check: empty
+end_timestamp_utc: 2026-01-16T13:53:55Z

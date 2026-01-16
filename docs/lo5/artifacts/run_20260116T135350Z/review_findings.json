@@ -1,0 +1,12 @@
+[
+  {
+    "description": "No explicit injection seam was detected for database failure simulation.",
+    "file": "src/orderflow/store/sqlite.py",
+    "id": "SEAM_DB_sqlite.py",
+    "line": 1,
+    "rationale": "Failing to simulate database errors can leave critical error paths untested.",
+    "recommendation": "Add a dependency injection point or adapter that allows tests to trigger DATABASE_ERROR conditions.",
+    "severity": "P2",
+    "title": "Missing explicit DATABASE_ERROR seam"
+  }
+]
