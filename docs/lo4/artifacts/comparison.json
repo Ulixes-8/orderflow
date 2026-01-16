@@ -1,0 +1,194 @@
+{
+  "failure_modes": {
+    "exercised_codes": [
+      "INVALID_MOBILE",
+      "INVALID_QUANTITY",
+      "MESSAGE_TOO_LONG",
+      "ORDER_NOT_FOUND",
+      "PARSE_ERROR",
+      "TOO_MANY_ITEMS",
+      "UNAUTHORIZED",
+      "UNKNOWN_ITEM"
+    ],
+    "explanation": "Error-code coverage compared to LO4 target list.",
+    "missing_codes": [
+      "DATABASE_ERROR",
+      "INTERNAL_ERROR",
+      "ORDER_ALREADY_FULFILLED"
+    ],
+    "passed": false,
+    "required_codes": [
+      "DATABASE_ERROR",
+      "INTERNAL_ERROR",
+      "INVALID_MOBILE",
+      "INVALID_QUANTITY",
+      "MESSAGE_TOO_LONG",
+      "ORDER_ALREADY_FULFILLED",
+      "ORDER_NOT_FOUND",
+      "PARSE_ERROR",
+      "TOO_MANY_ITEMS",
+      "UNAUTHORIZED",
+      "UNKNOWN_ITEM"
+    ]
+  },
+  "performance": {
+    "details": {
+      "batch_latency": {
+        "minimum": {
+          "ci_mean_ms": [
+            139.231,
+            141.165
+          ],
+          "ci_p95_ms": [
+            144.3,
+            147.264
+          ],
+          "mean_ms": {
+            "achieved": 140.198,
+            "passed": true,
+            "relation": "<=",
+            "target": 150.0
+          },
+          "p95_ms": {
+            "achieved": 146.863,
+            "passed": true,
+            "relation": "<=",
+            "target": 170.0
+          }
+        },
+        "stretch": {
+          "ci_mean_ms": [
+            139.231,
+            141.165
+          ],
+          "ci_p95_ms": [
+            144.3,
+            147.264
+          ],
+          "mean_ms": {
+            "achieved": 140.198,
+            "passed": false,
+            "relation": "<=",
+            "target": 80.0
+          },
+          "p95_ms": {
+            "achieved": 146.863,
+            "passed": false,
+            "relation": "<=",
+            "target": 140.0
+          }
+        }
+      },
+      "batch_throughput": {
+        "minimum": {
+          "ci_mean_lines_per_sec": [
+            141.782,
+            143.732
+          ],
+          "mean_lines_per_sec": {
+            "achieved": 142.758,
+            "passed": true,
+            "relation": ">=",
+            "target": 120.0
+          }
+        },
+        "stretch": {
+          "ci_mean_lines_per_sec": [
+            141.782,
+            143.732
+          ],
+          "mean_lines_per_sec": {
+            "achieved": 142.758,
+            "passed": false,
+            "relation": ">=",
+            "target": 200.0
+          }
+        }
+      },
+      "place": {
+        "ci_mean_ms": [
+          55.927,
+          56.558
+        ],
+        "ci_p95_ms": [
+          57.425,
+          59.511
+        ],
+        "mean_ms": {
+          "achieved": 56.22,
+          "passed": false,
+          "relation": "<=",
+          "target": 50.0
+        },
+        "p95_ms": {
+          "achieved": 58.502,
+          "passed": true,
+          "relation": "<=",
+          "target": 120.0
+        }
+      }
+    },
+    "explanation": "Place mean/p95 compared to targets; batch latency evaluated against minimum and stretch tiers; throughput evaluated against minimum and stretch lines/sec targets.",
+    "passed": false
+  },
+  "requirements_coverage": {
+    "achieved_percent": 100.0,
+    "explanation": "LO3 traceability coverage percent compared to LO4 target.",
+    "passed": true,
+    "target_percent": 100.0
+  },
+  "structural_coverage": {
+    "explanation": "Module-level line/branch coverage compared to LO3 targets.",
+    "modules": [
+      {
+        "achieved": {
+          "branch_rate": 0.9091,
+          "line_rate": 0.9524
+        },
+        "module": "orderflow/parser.py",
+        "passed": true,
+        "target": {
+          "branch_rate": 0.75,
+          "line_rate": 0.9
+        }
+      },
+      {
+        "achieved": {
+          "branch_rate": 0.5294,
+          "line_rate": 0.6703
+        },
+        "module": "orderflow/service.py",
+        "passed": true,
+        "target": {
+          "branch_rate": 0.5,
+          "line_rate": 0.65
+        }
+      },
+      {
+        "achieved": {
+          "branch_rate": 0.75,
+          "line_rate": 0.85
+        },
+        "module": "orderflow/store/sqlite.py",
+        "passed": true,
+        "target": {
+          "branch_rate": 0.7,
+          "line_rate": 0.8
+        }
+      },
+      {
+        "achieved": {
+          "branch_rate": 0.75,
+          "line_rate": 0.9318
+        },
+        "module": "orderflow/validation.py",
+        "passed": true,
+        "target": {
+          "branch_rate": 0.75,
+          "line_rate": 0.9
+        }
+      }
+    ],
+    "passed": true
+  }
+}

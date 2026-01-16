@@ -1,0 +1,89 @@
+{
+  "failure_modes": {
+    "notes": "Codes derived from docs/cli_contract.md.",
+    "required_codes": [
+      "INVALID_MOBILE",
+      "MESSAGE_TOO_LONG",
+      "PARSE_ERROR",
+      "TOO_MANY_ITEMS",
+      "UNKNOWN_ITEM",
+      "INVALID_QUANTITY",
+      "UNAUTHORIZED",
+      "ORDER_NOT_FOUND",
+      "ORDER_ALREADY_FULFILLED",
+      "DATABASE_ERROR",
+      "INTERNAL_ERROR"
+    ]
+  },
+  "generated_at": null,
+  "measurement_quality": {
+    "assumptions": [
+      "Independent samples under identical workload.",
+      "Warmup samples discarded."
+    ],
+    "bootstrap_resamples": 2000,
+    "ci_method": "bootstrap_percentile",
+    "samples_batch": 60,
+    "samples_place": 60,
+    "warmup": 5
+  },
+  "performance": {
+    "batch": {
+      "lines_per_batch": 20,
+      "minimum": {
+        "mean_ms": 150.0,
+        "motivation": "Minimum acceptable threshold for a 20-line batch on a local developer environment; set above current observed mean/p95 so the target is plausible without immediate optimization.",
+        "p95_ms": 170.0
+      },
+      "stretch": {
+        "mean_ms": 80.0,
+        "motivation": "Aspirational headroom goal that requires optimization beyond current baselines. Targets set slightly above LO3 smoke baselines to be realistic while still requiring headroom for batch processing.",
+        "p95_ms": 140.0
+      },
+      "throughput": {
+        "minimum": {
+          "mean_lines_per_sec": 120.0
+        },
+        "notes": "Derived from latency samples and known batch line count.",
+        "stretch": {
+          "mean_lines_per_sec": 200.0
+        }
+      }
+    },
+    "place": {
+      "acceptance_text": "Using repeated sampling: mean_total_ms <= 50ms and p95_total_ms <= 120ms for a typical order.",
+      "mean_ms": 50.0,
+      "p95_ms": 120.0,
+      "requirement_id": "R-PERF-PLACE-01",
+      "requirement_text": "Under a defined workload, `place` latency shall meet explicit targets on the reference environment."
+    }
+  },
+  "requirements_coverage": {
+    "target_percent": 100.0
+  },
+  "sources": {
+    "place_requirement_id": "R-PERF-PLACE-01",
+    "requirements_path": "docs/lo1/requirements.json"
+  },
+  "structural_coverage": {
+    "modules": {
+      "orderflow/parser.py": {
+        "branch_rate": 0.75,
+        "line_rate": 0.9
+      },
+      "orderflow/service.py": {
+        "branch_rate": 0.5,
+        "line_rate": 0.65
+      },
+      "orderflow/store/sqlite.py": {
+        "branch_rate": 0.7,
+        "line_rate": 0.8
+      },
+      "orderflow/validation.py": {
+        "branch_rate": 0.75,
+        "line_rate": 0.9
+      }
+    },
+    "notes": "CLI subprocess coverage is reported but not used as a primary adequacy target."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "assumptions": [
+    "Independent samples with identical workload per run.",
+    "Warmup runs discarded."
+  ],
+  "batch": {
+    "ci_mean_ms": [
+      139.231,
+      141.165
+    ],
+    "ci_p95_ms": [
+      144.3,
+      147.264
+    ],
+    "mean_ms": 140.198,
+    "median_ms": 140.402,
+    "n": 60,
+    "p95_ms": 146.863,
+    "stdev_ms": 3.761,
+    "throughput": {
+      "ci_mean_lines_per_sec": [
+        141.782,
+        143.732
+      ],
+      "mean_lines_per_sec": 142.758,
+      "median_lines_per_sec": 142.448,
+      "stdev_lines_per_sec": 3.813
+    }
+  },
+  "bootstrap_resamples": 2000,
+  "ci_method": "bootstrap_percentile",
+  "configuration": {
+    "samples_batch": 60,
+    "samples_place": 60,
+    "warmup": 5
+  },
+  "generated_at": "2026-01-16T12:30:57Z",
+  "place": {
+    "ci_mean_ms": [
+      55.927,
+      56.558
+    ],
+    "ci_p95_ms": [
+      57.425,
+      59.511
+    ],
+    "mean_ms": 56.22,
+    "median_ms": 55.968,
+    "n": 60,
+    "p95_ms": 58.502,
+    "stdev_ms": 1.255
+  },
+  "workload": {
+    "batch": {
+      "lines": 20,
+      "message": "ORDER COFFEE=1"
+    },
+    "place": {
+      "message": "ORDER COFFEE=1",
+      "mobile": "+447700900123"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "error_codes_exercised": [
+    "INVALID_MOBILE",
+    "INVALID_QUANTITY",
+    "MESSAGE_TOO_LONG",
+    "ORDER_NOT_FOUND",
+    "PARSE_ERROR",
+    "TOO_MANY_ITEMS",
+    "UNAUTHORIZED",
+    "UNKNOWN_ITEM"
+  ],
+  "source": {
+    "error_codes_path": "docs/lo3/artifacts/error_codes_exercised.json",
+    "generated_at": "2026-01-13T17:06:51+00:00",
+    "metrics_path": "docs/lo3/artifacts/metrics.json"
+  }
+}
