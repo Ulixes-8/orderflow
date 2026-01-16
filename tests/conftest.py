@@ -19,6 +19,9 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
+
+ARTIFACTS_DIR_ENV = "ORDERFLOW_ARTIFACTS_DIR"
+FORBID_LO3_WRITES_ENV = "ORDERFLOW_FORBID_LO3_WRITES"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -46,9 +49,9 @@ class ArtifactCollector:
         self.performance_samples[series].append(duration_ms)
 
     def write_artifacts(self, root: Path) -> None:
-        """Write collected artifacts to docs/lo3/artifacts."""
+        """Write collected artifacts to the configured artifacts directory."""
 
-        artifacts_dir = root / "docs" / "lo3" / "artifacts"
+        artifacts_dir = _resolve_artifacts_dir(root)
         artifacts_dir.mkdir(parents=True, exist_ok=True)
 
         error_codes_path = artifacts_dir / "error_codes_exercised.json"
@@ -93,6 +96,31 @@ def _summarize_samples(samples: List[float]) -> Dict[str, float | int | List[flo
         "p95_ms": round(sorted_samples[p95_index], 3),
         "samples_ms": [round(sample, 3) for sample in sorted_samples],
     }
+
+
+def _resolve_artifacts_dir(root: Path) -> Path:
+    """Resolve the artifacts directory, guarding against LO3 overwrites."""
+
+    configured = os.getenv(ARTIFACTS_DIR_ENV)
+    if configured:
+        artifacts_dir = Path(configured)
+        if not artifacts_dir.is_absolute():
+            artifacts_dir = root / artifacts_dir
+    else:
+        artifacts_dir = root / "docs" / "lo3" / "artifacts"
+
+    if os.getenv(FORBID_LO3_WRITES_ENV) == "1":
+        lo3_root = (root / "docs" / "lo3").resolve()
+        try:
+            artifacts_dir.resolve().relative_to(lo3_root)
+        except ValueError:
+            return artifacts_dir
+        raise RuntimeError(
+            "LO3 writes are forbidden, but artifacts dir is under docs/lo3. "
+            f"Set {ARTIFACTS_DIR_ENV} to a safe path."
+        )
+
+    return artifacts_dir
 
 
 def _resolve_cli_command() -> List[str]:
