@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -84,10 +84,31 @@ def _compare_failure_modes(targets: Dict[str, Any], failure_modes: Dict[str, Any
     passed = not missing
     return {
         "required_codes": sorted(required),
-        "achieved_codes": sorted(achieved),
+        "exercised_codes": sorted(achieved),
         "missing_codes": missing,
         "passed": passed,
         "explanation": "Error-code coverage compared to LO4 target list.",
+    }
+
+
+def _compare_metric(
+    achieved: float,
+    target: float,
+    direction: Literal["max", "min"],
+) -> Dict[str, Any]:
+    """Compare an achieved value against a target threshold."""
+
+    if direction == "max":
+        passed = achieved <= target
+        relation = "<="
+    else:
+        passed = achieved >= target
+        relation = ">="
+    return {
+        "achieved": achieved,
+        "target": target,
+        "relation": relation,
+        "passed": passed,
     }
 
 
@@ -95,26 +116,101 @@ def _compare_performance(targets: Dict[str, Any], perf: Dict[str, Any]) -> Dict[
     """Compare performance statistics to targets."""
 
     performance_targets = targets.get("performance", {})
-    comparison = {}
-    passed = True
-    for series in ("place", "batch"):
-        target = performance_targets.get(series, {})
-        achieved = perf.get(series, {})
-        mean_target = target.get("mean_ms")
-        p95_target = target.get("p95_ms")
-        mean_ms = achieved.get("mean_ms", 0.0)
-        p95_ms = achieved.get("p95_ms", 0.0)
-        series_passed = mean_ms <= mean_target and p95_ms <= p95_target
-        comparison[series] = {
-            "target": {"mean_ms": mean_target, "p95_ms": p95_target},
-            "achieved": {"mean_ms": mean_ms, "p95_ms": p95_ms},
-            "passed": series_passed,
-        }
-        passed = passed and series_passed
+    place_target = performance_targets.get("place", {})
+    batch_target = performance_targets.get("batch", {})
+
+    place_stats = perf.get("place", {})
+    batch_stats = perf.get("batch", {})
+
+    comparison: Dict[str, Any] = {
+        "place": {
+            "mean_ms": _compare_metric(
+                place_stats.get("mean_ms", 0.0),
+                place_target.get("mean_ms", 0.0),
+                "max",
+            ),
+            "p95_ms": _compare_metric(
+                place_stats.get("p95_ms", 0.0),
+                place_target.get("p95_ms", 0.0),
+                "max",
+            ),
+            "ci_mean_ms": place_stats.get("ci_mean_ms"),
+            "ci_p95_ms": place_stats.get("ci_p95_ms"),
+        },
+        "batch_latency": {},
+        "batch_throughput": {},
+    }
+
+    batch_min = batch_target.get("minimum", {})
+    batch_stretch = batch_target.get("stretch", {})
+    batch_throughput_targets = batch_target.get("throughput", {})
+    throughput_stats = batch_stats.get("throughput", {})
+
+    comparison["batch_latency"]["minimum"] = {
+        "mean_ms": _compare_metric(
+            batch_stats.get("mean_ms", 0.0),
+            batch_min.get("mean_ms", 0.0),
+            "max",
+        ),
+        "p95_ms": _compare_metric(
+            batch_stats.get("p95_ms", 0.0),
+            batch_min.get("p95_ms", 0.0),
+            "max",
+        ),
+        "ci_mean_ms": batch_stats.get("ci_mean_ms"),
+        "ci_p95_ms": batch_stats.get("ci_p95_ms"),
+    }
+    comparison["batch_latency"]["stretch"] = {
+        "mean_ms": _compare_metric(
+            batch_stats.get("mean_ms", 0.0),
+            batch_stretch.get("mean_ms", 0.0),
+            "max",
+        ),
+        "p95_ms": _compare_metric(
+            batch_stats.get("p95_ms", 0.0),
+            batch_stretch.get("p95_ms", 0.0),
+            "max",
+        ),
+        "ci_mean_ms": batch_stats.get("ci_mean_ms"),
+        "ci_p95_ms": batch_stats.get("ci_p95_ms"),
+    }
+
+    comparison["batch_throughput"]["minimum"] = {
+        "mean_lines_per_sec": _compare_metric(
+            throughput_stats.get("mean_lines_per_sec", 0.0),
+            batch_throughput_targets.get("minimum", {}).get("mean_lines_per_sec", 0.0),
+            "min",
+        ),
+        "ci_mean_lines_per_sec": throughput_stats.get("ci_mean_lines_per_sec"),
+    }
+    comparison["batch_throughput"]["stretch"] = {
+        "mean_lines_per_sec": _compare_metric(
+            throughput_stats.get("mean_lines_per_sec", 0.0),
+            batch_throughput_targets.get("stretch", {}).get("mean_lines_per_sec", 0.0),
+            "min",
+        ),
+        "ci_mean_lines_per_sec": throughput_stats.get("ci_mean_lines_per_sec"),
+    }
+
+    passed = (
+        comparison["place"]["mean_ms"]["passed"]
+        and comparison["place"]["p95_ms"]["passed"]
+        and comparison["batch_latency"]["minimum"]["mean_ms"]["passed"]
+        and comparison["batch_latency"]["minimum"]["p95_ms"]["passed"]
+        and comparison["batch_latency"]["stretch"]["mean_ms"]["passed"]
+        and comparison["batch_latency"]["stretch"]["p95_ms"]["passed"]
+        and comparison["batch_throughput"]["minimum"]["mean_lines_per_sec"]["passed"]
+        and comparison["batch_throughput"]["stretch"]["mean_lines_per_sec"]["passed"]
+    )
+
     return {
         "passed": passed,
-        "series": comparison,
-        "explanation": "Mean and p95 total latency compared to LO4 targets.",
+        "details": comparison,
+        "explanation": (
+            "Place mean/p95 compared to targets; batch latency evaluated "
+            "against minimum and stretch tiers; throughput evaluated against "
+            "minimum and stretch lines/sec targets."
+        ),
     }
 
 

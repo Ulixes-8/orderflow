@@ -6,7 +6,7 @@ import math
 import random
 from dataclasses import dataclass
 from statistics import mean, median, pstdev
-from typing import Iterable, List, Sequence, Tuple
+from typing import Callable, Iterable, List, Sequence, Tuple
 
 
 @dataclass(frozen=True)
@@ -28,7 +28,7 @@ def _percentile(sorted_samples: Sequence[float], pct: float) -> float:
 
 def _bootstrap_percentile(
     samples: Sequence[float],
-    stat_fn,
+    stat_fn: Callable[[Sequence[float]], float],
     config: BootstrapConfig,
 ) -> Tuple[float, float]:
     """Compute percentile bootstrap CI for the given statistic."""
@@ -81,4 +81,37 @@ def summarize_samples(
         "p95_ms": round(_percentile(sorted_samples, 0.95), 3),
         "ci_mean_ms": [round(ci_mean[0], 3), round(ci_mean[1], 3)],
         "ci_p95_ms": [round(ci_p95[0], 3), round(ci_p95[1], 3)],
+    }
+
+
+def summarize_throughput(
+    samples_ms: Sequence[float],
+    lines_per_batch: int,
+    bootstrap: BootstrapConfig,
+) -> dict:
+    """Summarize batch throughput (lines/sec) derived from latency samples."""
+
+    if lines_per_batch <= 0:
+        raise ValueError("lines_per_batch must be positive for throughput statistics.")
+    throughput_samples = [
+        lines_per_batch / (sample / 1000.0) for sample in samples_ms if sample > 0
+    ]
+    sorted_samples = sorted(throughput_samples)
+    if not sorted_samples:
+        return {
+            "mean_lines_per_sec": 0.0,
+            "median_lines_per_sec": 0.0,
+            "stdev_lines_per_sec": 0.0,
+            "ci_mean_lines_per_sec": [0.0, 0.0],
+        }
+
+    def _mean(values: Sequence[float]) -> float:
+        return float(mean(values))
+
+    ci_mean = _bootstrap_percentile(sorted_samples, _mean, bootstrap)
+    return {
+        "mean_lines_per_sec": round(mean(sorted_samples), 3),
+        "median_lines_per_sec": round(median(sorted_samples), 3),
+        "stdev_lines_per_sec": round(pstdev(sorted_samples), 3),
+        "ci_mean_lines_per_sec": [round(ci_mean[0], 3), round(ci_mean[1], 3)],
     }
