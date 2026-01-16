@@ -74,6 +74,18 @@ def _validate_headings(summary_path: Path) -> List[str]:
     return errors
 
 
+def _validate_summary_lo3_diff(summary_path: Path) -> List[str]:
+    """Validate the LO3 diff result is reported in the summary."""
+
+    errors: List[str] = []
+    content = summary_path.read_text(encoding="utf-8")
+    if "LO3 diff check:" not in content:
+        errors.append("Summary missing LO3 diff check result line.")
+    if "LO3 diff check: empty" not in content:
+        errors.append("Summary missing LO3 diff check result value.")
+    return errors
+
+
 def _validate_review_findings(artifacts_dir: Path) -> List[str]:
     """Validate the review findings JSON structure."""
 
@@ -137,6 +149,7 @@ def main() -> int:
     errors.extend(_require_files(REQUIRED_DOCS))
     if args.summary.exists():
         errors.extend(_validate_headings(args.summary))
+        errors.extend(_validate_summary_lo3_diff(args.summary))
     if args.log.exists():
         errors.extend(_validate_results_log(args.log))
     errors.extend(_validate_review_findings(args.artifacts))
